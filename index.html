@@ -441,8 +441,15 @@
     .masthead-top{padding:12px 14px;}
     .hero-main h1{font-size:30px;}
     .guide-grid{grid-template-columns:1fr;}
-    .foot-top{grid-template-columns:1fr;}
-    .foot-brand{grid-column:auto;}
+    /* compact + centered footer: brand on top, links in a 2-col grid */
+    .foot-top{grid-template-columns:1fr 1fr; gap:32px 20px; text-align:center;}
+    .foot-brand{grid-column:span 2;}
+    .foot-brand .logo-lg{justify-content:center;}
+    .foot-brand p{margin-left:auto; margin-right:auto;}
+    .foot-brand .socials{justify-content:center;}
+    .foot-top ul{align-items:center;}
+    .foot-bottom{align-items:center; text-align:center;}
+    .foot-bottom .l{justify-content:center;}
     .logo-sub .th{font-size:11.5px;}
     .popular{padding:0 14px;}
     .pick{padding:0 14px;}
