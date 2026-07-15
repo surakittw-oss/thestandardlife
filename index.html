@@ -1,0 +1,1132 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<title>THE STANDARD LIFE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Noto+Serif+Thai:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#000000;
+    --paper:#ffffff;
+    --cream:#f5f5f5;
+    --stone:#ebebeb;
+    --muted:#6b6b6b;
+    --body:#333333;
+    --line:#e0e0e0;
+    --line-soft:#f0f0f0;
+    --line-strong:#000000;
+    --accent:#000000;
+    --inverse-bg:#000000;
+    --inverse-fg:#ffffff;
+    --dark-section-bg:#0d0d0d;
+    --dark-section-fg:#f5f5f5;
+    --hot:#cc3b18;
+    --r:6px;
+    --cover: 1200 / 628;
+    --serif:'Fraunces','Georgia',serif;
+    --serif-th:'Noto Serif Thai','Georgia',serif;
+    --sans:'Noto Sans Thai',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  html[data-theme="dark"]{
+    --ink:#f5f5f5;
+    --paper:#0a0a0a;
+    --cream:#141414;
+    --stone:#1e1e1e;
+    --muted:#888888;
+    --body:#cccccc;
+    --line:#242424;
+    --line-soft:#1a1a1a;
+    --line-strong:#f5f5f5;
+    --accent:#f5f5f5;
+    --inverse-bg:#f5f5f5;
+    --inverse-fg:#0a0a0a;
+    --dark-section-bg:#141414;
+    --dark-section-fg:#f5f5f5;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:16px; line-height:1.72; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision; text-wrap:pretty;}
+  img{display:block; max-width:100%;}
+  a{color:inherit; text-decoration:none;}
+  button{font:inherit; background:none; border:0; cursor:pointer; color:inherit;}
+
+  .wrap{max-width:1400px; margin:0 auto; padding:0 40px;}
+
+  /* ---------- TICKER (hidden in minimal mode) ---------- */
+  .ticker{display:none;}
+  .ticker-inner{display:flex; gap:48px; padding:10px 40px; white-space:nowrap; animation:tick 50s linear infinite; width:max-content;}
+  .ticker-inner span{display:inline-flex; gap:12px; align-items:center;}
+  .ticker-inner span::before{content:""; width:4px; height:4px; background:var(--inverse-fg); border-radius:50%; display:inline-block;}
+  .ticker-inner .live::before{background:var(--hot); box-shadow:0 0 0 3px rgba(230,68,21,.25);}
+  @keyframes tick{ to{ transform:translateX(-50%);} }
+
+  /* ---------- MASTHEAD ---------- */
+  .masthead{border-bottom:1px solid var(--line); position:relative;}
+  .masthead-top{display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:28px 48px 22px; gap:24px;}
+  .mh-left, .mh-right{display:flex; align-items:center; gap:20px;}
+  .mh-right{justify-content:flex-end;}
+  .mh-date{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink);}
+  .mh-weather{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+  .pill-sub{border:1px solid var(--ink); padding:6px 14px; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; border-radius:999px; background:var(--ink); color:var(--paper);}
+  .mh-link{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;}
+
+  /* theme toggle */
+  .theme-toggle{flex:none; width:42px; height:42px; border:1px solid var(--line); border-radius:50%; display:inline-grid; place-items:center; background:transparent; color:var(--ink); cursor:pointer; transition:background .2s, color .2s, border-color .2s;}
+  .theme-toggle:hover{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .theme-toggle svg{width:17px; height:17px;}
+  .theme-toggle .sun{display:none;}
+  html[data-theme="dark"] .theme-toggle .sun{display:block;}
+  html[data-theme="dark"] .theme-toggle .moon{display:none;}
+
+  /* hamburger (mobile) */
+  .hamburger{display:none; flex:none; width:42px; height:42px; border:1px solid var(--line); border-radius:50%; place-items:center; background:transparent; color:var(--ink); cursor:pointer;}
+  .hamburger svg{width:18px; height:18px;}
+  .nav-hamburger-wrap{display:none;}
+
+  /* ---------- BRAND WORDMARK ---------- */
+  .logo{display:flex; flex-direction:column; align-items:center; gap:0; line-height:1; color:var(--ink);}
+  .logo-img{height:clamp(72px, 9vw, 110px); width:auto; display:block;}
+  html[data-theme="dark"] .logo-img{filter:invert(1);}
+  .logo-sub{text-align:center; margin-top:10px; max-width:50ch;}
+  .logo-sub .th{font-family:var(--sans); font-weight:400; font-size:13px; line-height:1.6; color:var(--muted); display:block;}
+  .logo-sub .en{font-family:var(--mono); font-size:9.5px; letter-spacing:.3em; text-transform:uppercase; color:var(--muted); display:block; margin-top:5px;}
+
+  /* nav */
+  .nav{display:flex; justify-content:center; align-items:stretch; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:0 48px; overflow-x:auto; scrollbar-width:none; position:sticky; top:0; z-index:100; background:var(--paper); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); transition:box-shadow .25s;}
+  .nav.scrolled{box-shadow:0 2px 16px rgba(0,0,0,.07);}
+  .nav::-webkit-scrollbar{display:none;}
+  .nav ul{list-style:none; display:flex; gap:0; justify-content:center; flex:1;}
+  .nav li a{display:block; padding:20px 20px; font-family:var(--mono); font-weight:400; font-size:11.5px; letter-spacing:.22em; text-transform:uppercase; position:relative; white-space:nowrap; transition:opacity .2s; border-bottom:2px solid transparent;}
+  .nav li a:hover{opacity:.5; border-bottom-color:var(--ink);}
+  .nav-meta{display:flex; align-items:center; gap:18px; color:var(--muted); font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; white-space:nowrap;}
+  .nav-meta .search{display:inline-flex; align-items:center; gap:8px; cursor:pointer;}
+  .nav-meta .search svg{width:14px; height:14px;}
+
+  /* ---------- KICKER (section label) ---------- */
+  .kicker{font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink); display:inline-flex; align-items:center; gap:10px;}
+  .kicker::before{content:""; width:22px; height:1px; background:var(--ink);}
+  .kicker.no-line::before{display:none;}
+
+  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink);}
+
+  /* ---------- HERO ---------- */
+  .hero{display:grid; grid-template-columns: 1fr 1.4fr 1fr; gap:0; border-bottom:1px solid var(--line);}
+  .hero > *{padding:56px 44px; border-right:1px solid var(--line);}
+  .hero > *:last-child{border-right:0;}
+  .hero > *:first-child{padding-left:48px;}
+
+  .hero-side{display:flex; flex-direction:column; gap:24px;}
+  .hero-side h4{font-family:var(--sans); font-weight:700; font-size:18px; line-height:1.45; letter-spacing:-.01em;}
+  .hero-side h4 a:hover{ text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:4px;}
+  .hero-side .meta{font-family:var(--mono); font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted);}
+  .hero-side .small-card{display:grid; grid-template-columns:96px 1fr; gap:14px; align-items:flex-start;}
+  .hero-side .small-card img{width:96px; aspect-ratio:var(--cover); object-fit:contain; background:var(--cream); filter:grayscale(.05); border-radius:var(--r);}
+  .hero-side .small-card h5{font-family:var(--sans); font-weight:600; font-size:14px; line-height:1.55;}
+  .hero-side hr{border:0; border-top:1px solid var(--line-soft); margin:0;}
+
+  .hero-main{display:flex; flex-direction:column; gap:26px;}
+  .hero-main .cat{font-family:var(--mono); font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--muted);}
+  .hero-main h1{
+    font-family:var(--sans); font-weight:700; font-size:clamp(44px,5.5vw,68px); line-height:1.1; letter-spacing:-.025em;
+  }
+  .hero-main h1 em{font-style:italic; font-weight:300;}
+  .hero-main .dek{font-family:var(--sans); font-size:17px; line-height:1.68; color:var(--body); max-width:50ch;}
+  .hero-main figure{margin-top:6px;}
+  .hero-main figure img{aspect-ratio:var(--cover); object-fit:contain; width:100%; background:var(--cream); border-radius:var(--r);}
+  .hero-main figcaption{font-family:var(--mono); font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-top:10px;}
+  .byline{display:flex; align-items:center; gap:12px; font-family:var(--sans); font-size:12px; letter-spacing:.04em; text-transform:none; color:var(--muted); flex-wrap:wrap;}
+  .byline .avatar{width:24px; height:24px; border-radius:50%; background:var(--line); object-fit:cover;}
+  .byline .dot{width:3px; height:3px; background:var(--ink); border-radius:50%;}
+
+  /* ---------- SECTION HEADER ---------- */
+  .section{padding:104px 0 72px; border-bottom:1px solid var(--line);}
+  .section-head{display:flex; align-items:flex-end; justify-content:space-between; padding:0 48px; margin-bottom:48px; gap:40px;}
+  .section-head .title{font-family:var(--sans); font-weight:700; font-size:36px; letter-spacing:-.02em; line-height:1.15;}
+  .section-head .title em{font-style:normal; font-weight:300;}
+  .section-head .lede{max-width:42ch; font-size:14px; color:var(--muted);}
+  .section-head .more{font-family:var(--mono); font-size:11px; letter-spacing:.15em; text-transform:uppercase; border-bottom:1px solid var(--ink); padding-bottom:2px; align-self:flex-end; color:var(--ink);}
+
+  /* ---------- EDITOR'S PICK ---------- */
+  .pick{display:grid; grid-template-columns: 1.1fr 1fr 1fr; gap:48px; padding:0 48px;}
+  .pick-card h3{font-family:var(--sans); font-weight:600; font-size:22px; line-height:1.4; letter-spacing:-.01em; margin-top:18px;}
+  .pick-card .cat{font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink);}
+  .pick-card p{color:var(--muted); font-size:14px; margin-top:10px; max-width:40ch;}
+  .pick-card .meta{margin-top:14px; font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+  .pick-card img{aspect-ratio:var(--cover); object-fit:contain; width:100%; background:var(--cream); border-radius:var(--r);}
+  .pick-card.feature img{aspect-ratio:var(--cover); object-fit:contain; background:var(--cream);}
+  .pick-card.feature h3{font-size:36px;}
+  .pick-badge{display:inline-flex; gap:10px; align-items:center; font-family:var(--mono); font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; margin-bottom:16px; color:var(--ink);}
+  .pick-badge .n{display:inline-grid; place-items:center; width:22px; height:22px; background:var(--ink); color:var(--paper); border-radius:50%; font-size:10px; letter-spacing:0;}
+
+  /* ---------- POPULAR THIS WEEK ---------- */
+  .popular{padding:0 48px; display:grid; grid-template-columns: repeat(4, 1fr); gap:36px 36px;}
+  .pop-item{display:flex; gap:18px; align-items:flex-start; border-top:1px solid var(--line); padding-top:20px;}
+  .pop-item .num{font-family:var(--mono); font-weight:400; font-size:38px; line-height:.9; letter-spacing:-.03em; color:var(--muted);}
+  .pop-item h4{font-family:var(--sans); font-weight:600; font-size:16px; line-height:1.55;}
+  .pop-item .cat{font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); display:block; margin-top:6px;}
+
+  /* ---------- BIG QUOTE — the single bold black moment ---------- */
+  .quote{padding:140px 40px; text-align:center; background:var(--ink); color:var(--paper); border-bottom:1px solid var(--ink);}
+  .quote blockquote{font-family:var(--sans); font-style:normal; font-weight:300; font-size:clamp(26px,3.8vw,44px); line-height:1.4; letter-spacing:-.01em; max-width:28ch; margin:0 auto; color:var(--paper);}
+  .quote blockquote::before, .quote blockquote::after{content:'"'; color:var(--paper);}
+  .quote cite{display:block; margin-top:32px; font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; font-style:normal; color:var(--paper); opacity:.55;}
+
+  /* ---------- CATEGORY ROW ---------- */
+  .cat-row{padding:0 48px; margin-bottom:72px;}
+  .cat-row-head{display:flex; align-items:center; justify-content:space-between; border-top:1.5px solid var(--ink); padding:20px 0 32px; gap:20px; flex-wrap:wrap;}
+  .cat-row-head h2{font-family:var(--mono); font-weight:500; font-size:clamp(16px,2vw,22px); letter-spacing:.22em; line-height:1; color:var(--ink); text-transform:uppercase;}
+  .cat-row-head h2 em{font-style:italic; font-weight:300;}
+  .cat-row-head .cat-sub{display:flex; align-items:center; gap:18px; flex-wrap:wrap;}
+  .cat-row-head .cat-sub a{font-family:var(--mono); font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted);}
+  .cat-row-head .cat-sub a:hover{color:var(--ink);}
+
+  .cat-grid{display:grid; grid-template-columns: 2fr 1fr 1fr; gap:32px; align-items:flex-start;}
+  .cat-lead img{aspect-ratio:var(--cover); object-fit:contain; width:100%; background:var(--cream); border-radius:var(--r);}
+  .cat-lead .cat{font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; margin-top:16px; display:block;}
+  .cat-lead h3{font-family:var(--sans); font-weight:600; font-size:28px; line-height:1.3; letter-spacing:-.01em; margin-top:14px;}
+  .cat-lead p{font-family:var(--sans); font-size:15px; line-height:1.68; color:var(--muted); margin-top:10px; max-width:52ch;}
+  .cat-lead .byline{margin-top:16px;}
+
+  .cat-stack{display:flex; flex-direction:column; gap:22px;}
+  .cat-stack .card{border-top:1px solid var(--line); padding-top:18px;}
+  .cat-stack .card:first-child{border-top:0; padding-top:0;}
+  .cat-stack img{aspect-ratio:var(--cover); object-fit:contain; width:100%; background:var(--cream); border-radius:var(--r);}
+  .cat-stack .cat{font-family:var(--mono); font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin-top:12px; display:block;}
+  .cat-stack h4{font-family:var(--sans); font-weight:600; font-size:17px; line-height:1.5; margin-top:6px;}
+  .cat-stack .meta{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:8px;}
+
+  /* alt row: list style, Monocle-like */
+  .list-grid{display:grid; grid-template-columns: repeat(3, 1fr); gap:0;}
+  .list-grid .li{padding:22px 24px; border-left:1px solid var(--line);}
+  .list-grid .li:first-child{border-left:0; padding-left:0;}
+  .list-grid .li .idx{font-family:var(--mono); font-size:11px; letter-spacing:.15em; color:var(--muted);}
+  .list-grid .li img{aspect-ratio:var(--cover); object-fit:contain; width:100%; background:var(--cream); margin-top:12px; border-radius:var(--r);}
+  .list-grid .li h4{font-family:var(--sans); font-weight:600; font-size:19px; line-height:1.45; margin-top:14px; letter-spacing:-.01em;}
+  .list-grid .li .cat{display:block; margin-top:10px; font-family:var(--mono); font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink);}
+  .list-grid .li p{color:var(--muted); font-size:13.5px; margin-top:8px;}
+
+  /* duo row (BEAUTY) */
+  .duo{display:grid; grid-template-columns: 1fr 1fr; gap:40px;}
+  .duo .card img{aspect-ratio:var(--cover); object-fit:contain; width:100%; background:var(--cream); border-radius:var(--r);}
+  .duo .card h3{font-family:var(--sans); font-weight:600; font-size:24px; line-height:1.38; margin-top:16px; letter-spacing:-.01em;}
+  .duo .card .cat{font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; display:block; margin-bottom:10px;}
+  .duo .card p{color:var(--muted); margin-top:10px; max-width:42ch;}
+
+  /* LIVING row — softened to a calm tone (was inverted black) */
+  .dark-row{background:var(--cream); color:var(--ink); padding:96px 48px; border-bottom:1px solid var(--line);}
+  .dark-row .cat-row-head{border-top:1px solid var(--line);}
+  .dark-row .cat-row-head h2{color:var(--ink);}
+  .dark-row .cat-row-head .cat-sub a{color:var(--muted);}
+  .dark-row .cat-row-head .cat-sub a:hover{color:var(--ink);}
+  .dark-row .cat-lead h3{color:var(--ink);}
+  .dark-row p, .dark-row .cat, .dark-row .meta{color:var(--muted);}
+  .dark-row .cat-stack .card{border-top-color:var(--line);}
+  .dark-row .cat-stack h4{color:var(--ink);}
+  .dark-row .byline .avatar{background:var(--line);}
+
+  /* guide strip (CITY GUIDE inside TRAVEL-ish feel) */
+  .guide{padding:0 40px;}
+  .guide-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:20px;}
+  .guide-head h3{font-family:var(--sans); font-weight:700; font-size:22px; letter-spacing:-.01em;}
+  .guide-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px;}
+  .guide-card{position:relative; overflow:hidden;}
+  .guide-card img{aspect-ratio:var(--cover); object-fit:contain; width:100%; background:var(--cream); border-radius:var(--r);}
+  .guide-card .meta{display:flex; justify-content:space-between; align-items:flex-end; margin-top:12px;}
+  .guide-card .meta .name{font-family:var(--serif); font-weight:500; font-size:20px; letter-spacing:-.01em;}
+  .guide-card .meta .n{font-family:var(--mono); font-size:11px; letter-spacing:.22em;}
+  .guide-card .sub{font-family:var(--mono); font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin-top:4px; display:block;}
+  .guide-card .meta .name{color:var(--ink);}
+
+  /* ---------- NEWSLETTER ---------- */
+  .newsletter{padding:120px 48px; background:var(--cream); color:var(--ink); display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; border-bottom:1px solid var(--line);}
+  .newsletter h2{font-family:var(--sans); font-weight:700; font-size:clamp(30px,4.2vw,46px); line-height:1.2; letter-spacing:-.01em;}
+  .newsletter h2 em{font-style:normal; font-weight:300;}
+  .newsletter p{color:var(--body); margin-top:18px; max-width:42ch; font-size:15px;}
+  .newsletter form{display:flex; border:1.5px solid var(--ink); background:var(--paper); border-radius:4px; overflow:hidden;}
+  .newsletter input{flex:1; min-width:0; padding:20px 22px; border:0; font-family:var(--sans); font-size:15px; background:transparent; outline:none; color:var(--ink);}
+  .newsletter input::placeholder{color:var(--muted);}
+  .newsletter button{background:var(--ink); color:var(--paper); padding:0 26px; font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; white-space:nowrap;}
+  .newsletter .mini{display:flex; gap:24px; margin-top:22px; font-family:var(--mono); font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); flex-wrap:wrap;}
+  .newsletter .mini span::before{content:"✓ "; color:var(--ink);}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--dark-section-bg); color:var(--dark-section-fg); padding:64px 40px 32px;}
+  .foot-top{display:grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap:40px; padding-bottom:48px; border-bottom:1px solid rgba(255,255,255,.15);}
+  .foot-top h5{font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; margin-bottom:16px; color:rgba(255,255,255,.5);}
+  .foot-top ul{list-style:none; display:flex; flex-direction:column; gap:10px;}
+  .foot-top a{font-family:var(--sans); font-size:14px; color:rgba(255,255,255,.85);}
+  .foot-top a:hover{color:#fff; text-decoration:underline;}
+  .foot-brand .logo-lg{display:flex; align-items:baseline; gap:10px; line-height:1;}
+  .foot-brand .logo-lg .ts-the{font-family:var(--mono); font-weight:400; font-size:11px; letter-spacing:.18em; opacity:.7;}
+  .foot-brand .logo-lg .ts-standard{font-family:var(--mono); font-weight:500; font-size:13px; letter-spacing:.08em;}
+  .foot-brand .logo-lg .ts-life{font-family:var(--serif); font-weight:300; font-size:30px; letter-spacing:.1em; font-style:italic; font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 0;}
+  .foot-brand p{color:rgba(255,255,255,.6); margin-top:16px; max-width:34ch; font-size:14px;}
+  .foot-brand .socials{display:flex; gap:10px; margin-top:24px;}
+  .foot-brand .socials a{width:36px; height:36px; border:1px solid rgba(255,255,255,.3); display:grid; place-items:center; border-radius:50%;}
+  .foot-brand .socials svg{width:14px; height:14px; fill:#fff;}
+  .foot-bottom{display:flex; justify-content:space-between; padding-top:24px; font-family:var(--mono); font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.5); flex-wrap:wrap; gap:16px;}
+  .foot-bottom .l{display:flex; gap:24px; flex-wrap:wrap;}
+
+  /* rules lines */
+  .rule{height:1px; background:var(--line);}
+  .rule-double{border-top:1px solid #000; border-bottom:1px solid #000; height:5px;}
+
+  /* image treatments */
+  .img-frame{position:relative;}
+  .img-frame .tag{position:absolute; top:12px; left:12px; background:var(--paper); color:var(--ink); font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; padding:6px 10px; border-radius:999px;}
+  .img-frame .tag.dark{background:var(--ink); color:var(--paper);}
+
+  /* ---------- RESPONSIVE ---------- */
+
+  /* ── 1280px: wide tablet / small laptop ── */
+  @media (max-width: 1280px){
+    .masthead-top{padding:24px 32px 18px;}
+    .nav{padding:0 32px;}
+    .section-head{padding:0 32px;}
+    .popular{padding:0 32px;}
+    .pick{padding:0 32px; gap:32px;}
+    .cat-row{padding:0 32px;}
+    .newsletter{padding:80px 32px;}
+    footer{padding:56px 32px 28px;}
+    .dark-row{padding:80px 32px;}
+  }
+
+  /* ── 1100px: tablet landscape ── */
+  @media (max-width: 1100px){
+    .hero{grid-template-columns: 1fr 1fr;}
+    .hero > *:nth-child(3){display:none;}
+    .hero > *:first-child{padding-left:32px;}
+    .pick{grid-template-columns: 1.4fr 1fr; gap:28px;}
+    .pick-card:nth-child(3){grid-column: span 2; display:grid; grid-template-columns: 1fr 2fr; gap:24px; align-items:flex-start;}
+    .pick-card:nth-child(3) h3{margin-top:0;}
+    .popular{grid-template-columns: repeat(2, 1fr);}
+    .cat-grid{grid-template-columns: 1fr 1fr; gap:28px;}
+    .cat-lead{grid-column: span 2;}
+    .guide-grid{grid-template-columns: repeat(2, 1fr);}
+    .foot-top{grid-template-columns: 1fr 1fr 1fr;}
+    .foot-brand{grid-column: span 3;}
+    .newsletter{grid-template-columns: 1fr 1fr; gap:40px;}
+  }
+
+  /* ── 900px: small tablet ── */
+  @media (max-width: 900px){
+    .masthead-top{padding:18px 24px 14px;}
+    .mh-left{gap:10px;}
+    .mh-weather{display:none;}
+    .hero{grid-template-columns: 1fr;}
+    .hero > *{border-right:0; border-bottom:1px solid var(--line); padding:32px 24px;}
+    .hero > *:last-child{border-bottom:0;}
+    .hero > *:first-child{padding-left:24px;}
+    .hero > *:nth-child(3){display:flex;}
+    .hero-main h1{font-size:clamp(40px,6vw,56px);}
+    .pick{grid-template-columns:1fr; gap:32px; padding:0 24px;}
+    .pick-card:nth-child(3){grid-column:auto; display:block;}
+    .pick-card:nth-child(3) h3{margin-top:16px;}
+    .section-head{padding:0 24px;}
+    .popular{grid-template-columns:repeat(2,1fr); padding:0 24px;}
+    .cat-row{padding:0 24px;}
+    .guide{padding:0 24px;}
+    .dark-row{padding:64px 24px;}
+    .newsletter{grid-template-columns:1fr; padding:64px 24px; gap:28px;}
+    .foot-top{grid-template-columns:1fr 1fr; gap:28px;}
+    .foot-brand{grid-column:span 2;}
+    footer{padding:48px 24px 24px;}
+  }
+
+  /* ── 760px: mobile ── */
+  @media (max-width: 760px){
+    body{font-size:15px;}
+
+    /* masthead */
+    .masthead-top{grid-template-columns: auto 1fr auto; padding:14px 16px 12px; gap:12px;}
+    .masthead-top > div:first-child{display:none;} /* hide date col */
+    .mh-left{display:none;}
+    .mh-right{gap:10px;}
+    .logo{align-items:center;}
+    .logo-img{height:clamp(52px,12vw,72px);}
+    .logo-sub .th{font-size:12px;}
+    .logo-sub{text-align:center; padding:0 16px;}
+
+    /* sticky nav → hamburger drawer */
+    .nav{padding:0; justify-content:flex-start; border-bottom:1px solid var(--line);}
+    .nav ul{
+      display:none;
+      flex-direction:column;
+      width:100%;
+      background:var(--paper);
+      border-top:1px solid var(--line);
+      padding:8px 0;
+    }
+    .nav.open ul{display:flex;}
+    .nav li a{padding:14px 20px; font-size:13px; letter-spacing:.1em; border-bottom:1px solid var(--line-soft); width:100%;}
+    .nav li + li a{border-left:0;}
+    .nav li:last-child a{border-bottom:0;}
+    .nav-meta{padding:14px 20px; border-top:1px solid var(--line); display:flex;}
+    .nav-meta .search-label{display:none;}
+    .hamburger{display:inline-grid; margin-left:8px;}
+    .nav-hamburger-wrap{display:flex; align-items:center; justify-content:space-between; padding:0 16px; width:100%; min-height:52px;}
+    .nav-hamburger-wrap .brand-hint{font-family:var(--mono); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted);}
+
+    /* hero */
+    .hero > *{padding:24px 16px;}
+    .hero-main h1{font-size:clamp(34px,9vw,46px);}
+    .hero-main .dek{font-size:15px;}
+
+    /* sections */
+    .section{padding:48px 0 32px;}
+    .section-head{flex-direction:column; align-items:flex-start; gap:12px; padding:0 16px; margin-bottom:20px;}
+    .section-head .title{font-size:28px;}
+    .section-head .lede{display:none;}
+    .section-head .more{align-self:flex-start;}
+
+    /* editor pick */
+    .pick{grid-template-columns:1fr; padding:0 16px; gap:28px;}
+    .pick-card h3{font-size:20px;}
+    .pick-card.feature h3{font-size:24px;}
+    .pick-badge{font-size:9.5px;}
+
+    /* popular */
+    .popular{grid-template-columns:1fr; padding:0 16px; gap:0;}
+    .pop-item{padding:14px 0;}
+    .pop-item .num{font-size:32px;}
+    .pop-item h4{font-size:16px;}
+
+    /* pull quote */
+    .quote{padding:56px 16px;}
+    .quote blockquote{font-size:26px;}
+
+    /* category rows */
+    .cat-row{padding:0 16px; margin-bottom:32px;}
+    .cat-row-head h2{font-size:22px;}
+    .cat-row-head .cat-sub{gap:8px;}
+    .cat-row-head .cat-sub a{font-size:10px;}
+    .cat-grid{grid-template-columns:1fr;}
+    .cat-lead{grid-column:auto;}
+    .cat-lead h3{font-size:22px;}
+    .cat-stack{gap:16px;}
+    .list-grid{grid-template-columns:1fr;}
+    .list-grid .li{border-left:0; border-top:1px solid var(--line); padding:20px 0;}
+    .list-grid .li:first-child{border-top:0; padding-top:0;}
+    .list-grid .li h4{font-size:19px;}
+    .duo{grid-template-columns:1fr; gap:28px;}
+    .duo .card h3{font-size:22px;}
+    .dark-row{padding:48px 16px;}
+    .guide{padding:0 16px;}
+    .guide-grid{grid-template-columns:1fr 1fr; gap:14px;}
+
+    /* newsletter */
+    .newsletter{grid-template-columns:1fr; padding:52px 16px; gap:24px;}
+    .newsletter h2{font-size:32px;}
+    .newsletter form{flex-direction:column;}
+    .newsletter input{padding:16px 18px;}
+    .newsletter button{padding:16px 18px; text-align:center;}
+    .newsletter .mini{flex-direction:column; gap:8px;}
+
+    /* footer */
+    footer{padding:44px 16px 20px;}
+    .foot-top{grid-template-columns:1fr 1fr; gap:24px; padding-bottom:28px;}
+    .foot-brand{grid-column:span 2;}
+    .foot-bottom{flex-direction:column; gap:10px; font-size:10px;}
+    .foot-bottom .l{gap:16px;}
+  }
+
+  /* ── 480px: narrow mobile ── */
+  @media (max-width: 480px){
+    .masthead-top{padding:12px 14px;}
+    .hero-main h1{font-size:30px;}
+    .guide-grid{grid-template-columns:1fr;}
+    .foot-top{grid-template-columns:1fr;}
+    .foot-brand{grid-column:auto;}
+    .logo-sub .th{font-size:11.5px;}
+    .popular{padding:0 14px;}
+    .pick{padding:0 14px;}
+    .cat-row{padding:0 14px;}
+    .section-head{padding:0 14px;}
+    .guide{padding:0 14px;}
+    .newsletter{padding:44px 14px;}
+    footer{padding:36px 14px 18px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-inner">
+    <span class="live">Now reading — ใช้ชีวิตที่กรุงเทพฯ ผ่านร้านกาแฟ 12 ร้าน ที่ไม่ควรพลาด</span>
+    <span>Spring Issue 12 · เม.ย. 2026</span>
+    <span>Bangkok 33°C · Mostly Sunny</span>
+    <span>Now playing — The Standard Podcast: Slow Mornings</span>
+    <span>New in FOOD — 5 ร้าน Omakase ใต้หนึ่งพัน</span>
+    <span class="live">Now reading — ใช้ชีวิตที่กรุงเทพฯ ผ่านร้านกาแฟ 12 ร้าน ที่ไม่ควรพลาด</span>
+    <span>Spring Issue 12 · เม.ย. 2026</span>
+    <span>Bangkok 33°C · Mostly Sunny</span>
+    <span>Now playing — The Standard Podcast: Slow Mornings</span>
+    <span>New in FOOD — 5 ร้าน Omakase ใต้หนึ่งพัน</span>
+  </div>
+</div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-top">
+    <div class="mh-left">
+      <span class="mh-date">Saturday, April 18, 2026</span>
+      <span class="mh-weather">· Bangkok 33°/26° Sunny</span>
+    </div>
+    <div>
+      <div class="logo">
+        <img src="logo-tsl.png" alt="THE STANDARD LIFE" class="logo-img">
+      </div>
+      <div class="logo-sub">
+        <span class="th">คู่มือกิน ดื่ม เที่ยว และ Well-being ของคนเมืองที่อยากมีสุขภาพกายและใจที่ดีอย่างยั่งยืน</span>
+        <span class="en">The Urban Guide to Well-being</span>
+      </div>
+    </div>
+    <div class="mh-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="nav" id="mainNav">
+    <div class="nav-hamburger-wrap">
+      <span class="brand-hint">Menu</span>
+      <button class="hamburger" id="navHamburger" aria-label="Menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+    <ul>
+      <li><a href="#">Food &amp; Drink</a></li>
+      <li><a href="#">Place</a></li>
+      <li><a href="#">Active Leisure</a></li>
+      <li><a href="#">Body &amp; Mind</a></li>
+      <li><a href="#">Living</a></li>
+      <li><a href="#">Tech &amp; Gadget</a></li>
+    </ul>
+    <div class="nav-meta">
+
+      <span class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span class="search-label">Search</span>
+      </span>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- LEFT: In this issue -->
+  <aside class="hero-side">
+    <div class="kicker">In this issue · No. 12</div>
+    <div class="small-card">
+      <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+      <div>
+        <span class="eyebrow">FOOD</span>
+        <h5 style="margin-top:6px;">คู่มือกินข้าวคนเดียว ในวันที่โลกเสียงดังเกินไป</h5>
+        <div class="meta" style="margin-top:8px; color:var(--muted);">6 min read</div>
+      </div>
+    </div>
+    <hr>
+    <div class="small-card">
+      <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+      <div>
+        <span class="eyebrow">WELLNESS</span>
+        <h5 style="margin-top:6px;">ทำไมการเดิน 20 นาทีทุกเช้า ถึงเปลี่ยนทั้งวัน</h5>
+        <div class="meta" style="margin-top:8px; color:var(--muted);">4 min read</div>
+      </div>
+    </div>
+    <hr>
+    <div class="small-card">
+      <img src="https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+      <div>
+        <span class="eyebrow">TRAVEL</span>
+        <h5 style="margin-top:6px;">หนีเมืองสองวัน — เชียงคาน ในสายตานักเขียน</h5>
+        <div class="meta" style="margin-top:8px; color:var(--muted);">8 min read</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CENTER: headline -->
+  <article class="hero-main">
+    <span class="cat">Wellness · The Cover Story</span>
+    <h1>ใช้ชีวิต<em>ช้าลง</em><br>เพื่อหาตัวเอง<br>อีกครั้ง</h1>
+    <p class="dek">บทสนทนากับหกคนไทยที่ตัดสินใจเปลี่ยนจังหวะชีวิต ย้ายออกจากเมือง เลิกตื่นก่อนตะวัน และค้นพบความหมายที่หายไปในความเร่งรีบ — รายงานพิเศษจาก THE STANDARD LIFE ฉบับฤดูใบไม้ผลิ</p>
+    <figure class="img-frame">
+      <span class="tag">Cover Story</span>
+      <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+      <figcaption>ภาพโดย Kittiphum P. — ถ่ายที่บ้านของ อนุชา สุทธิสาร, เชียงดาว, มีนาคม 2026</figcaption>
+    </figure>
+    <div class="byline">
+      <img class="avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&q=80" alt="">
+      <span>By กวินธิดา จันทรวงศ์</span>
+      <span class="dot"></span>
+      <span>18 เม.ย. 2026</span>
+      <span class="dot"></span>
+      <span>12 min read</span>
+    </div>
+  </article>
+
+  <!-- RIGHT: Editor's letter + popular mini -->
+  <aside class="hero-side">
+    <div>
+      <div class="kicker">Editor's Letter</div>
+      <h4 style="margin-top:14px; font-size:18px; font-family:var(--sans); font-weight:600; line-height:1.5;">"เราเขียนเล่มนี้ เพื่อคนที่รู้สึกว่าเร็วเกินไป"</h4>
+      <p style="color:var(--muted); font-size:13.5px; margin-top:10px;">ฉบับนี้เราชวนทุกคนหยุด หายใจ แล้วดูว่าอะไรคือสิ่งที่เรายังอยากทำในชีวิต อ่านจดหมายจากบรรณาธิการฉบับเต็ม</p>
+      <div class="byline" style="margin-top:14px;">
+        <img class="avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&q=80" alt="">
+        <span>ชนาภา โตเจริญ · Editor‑in‑Chief</span>
+      </div>
+    </div>
+    <hr>
+    <div>
+      <div class="kicker">Listen</div>
+      <div class="small-card" style="margin-top:14px;">
+        <img src="https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <div>
+          <span class="eyebrow" style="color:#000;">PODCAST · EP.48</span>
+          <h5 style="margin-top:6px;">Slow Mornings — ชีวิตช้าๆ ในเมืองเร็วๆ</h5>
+          <div class="meta" style="margin-top:8px; color:var(--muted);">42 min · New episode</div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div>
+      <div class="kicker">Upcoming Event</div>
+      <h5 style="font-family:var(--sans); font-size:16px; margin-top:12px; font-weight:600; line-height:1.5;">Standard Life Market — Bangsaen, 24–25 พฤษภาคม</h5>
+      <div class="meta" style="margin-top:8px;">ของใช้งานคราฟท์ · ดนตรี · อาหารชุมชน</div>
+    </div>
+  </aside>
+</section>
+
+<!-- EDITOR'S PICK -->
+<section class="section" style="padding-top:84px;">
+  <div class="section-head">
+    <div>
+      <div class="kicker" style="margin-bottom:16px;">Editor's Pick · คัดสรรโดยบรรณาธิการ</div>
+      <h2 class="title">สิ่งที่<em>ควรอ่าน</em> สัปดาห์นี้</h2>
+    </div>
+    <p class="lede">สี่บทความที่ทีมงานเลือก — เพราะมันจะติดอยู่ในใจคุณไปสักพักใหญ่</p>
+    <a class="more" href="#">All Picks →</a>
+  </div>
+
+  <div class="pick">
+    <div class="pick-card feature">
+      <div class="pick-badge"><span class="n">01</span> FEATURE OF THE WEEK</div>
+      <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+      <span class="cat" style="margin-top:16px; display:block;">Travel · Longform</span>
+      <h3>ถนนสายเก่าที่หายไปจากแผนที่ — เรื่องเล่าจากเชียงคาน หลัง 20 ปี</h3>
+      <p>สามวันสองคืนบนริมโขง ชีวิตที่ยังเหลือในเมืองที่เปลี่ยนไว — บันทึกการเดินทางโดย ธีรวัฒน์ ปัญญา</p>
+      <div class="meta">18 เม.ย. · 14 min read</div>
+    </div>
+    <div class="pick-card">
+      <div class="pick-badge"><span class="n">02</span> EDITOR'S NOTE</div>
+      <img src="https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+      <span class="cat" style="margin-top:16px; display:block;">Food</span>
+      <h3>ทำไมข้าวมันไก่ตรงหัวมุม ถึงยังชนะ Michelin ได้</h3>
+      <p>เรื่องของร้านเก่า 40 ปี ในสายตาของเชฟคนใหม่</p>
+      <div class="meta">17 เม.ย. · 8 min</div>
+    </div>
+    <div class="pick-card">
+      <div class="pick-badge"><span class="n">03</span> WELLNESS GUIDE</div>
+      <img src="https://images.unsplash.com/photo-1631016800696-5ea8801b3c2a?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+      <span class="cat" style="margin-top:16px; display:block;">Wellness</span>
+      <h3>คู่มือนอนหลับสนิท สำหรับคนทำงานกะ</h3>
+      <p>หมอสี่คนคุยเรื่องแสง, อาหาร, และห้องนอนที่ดี</p>
+      <div class="meta">16 เม.ย. · 11 min</div>
+    </div>
+  </div>
+</section>
+
+<!-- POPULAR THIS WEEK -->
+<section class="section">
+  <div class="section-head">
+    <div>
+      <div class="kicker" style="margin-bottom:16px;">Popular this week · อ่านมากที่สุด</div>
+      <h2 class="title">สิ่งที่ผู้อ่าน<em>กำลังคุยกัน</em></h2>
+    </div>
+    <a class="more" href="#">See the list →</a>
+  </div>
+  <div class="popular">
+    <div class="pop-item">
+      <span class="num">01</span>
+      <div>
+        <h4>10 คาเฟ่เปิดใหม่ในกรุงเทพฯ ที่คนในวงการกาแฟพูดถึง</h4>
+        <span class="cat">Food</span>
+      </div>
+    </div>
+    <div class="pop-item">
+      <span class="num">02</span>
+      <div>
+        <h4>วิ่งยังไงไม่ให้เข่าพัง — คู่มือจากโค้ชไทย 3 คน</h4>
+        <span class="cat">Fitness</span>
+      </div>
+    </div>
+    <div class="pop-item">
+      <span class="num">03</span>
+      <div>
+        <h4>เดินตลาด 100 ปี ในซอยเล็กของเจริญกรุง</h4>
+        <span class="cat">Culture</span>
+      </div>
+    </div>
+    <div class="pop-item">
+      <span class="num">04</span>
+      <div>
+        <h4>สกินแคร์เกาหลีกับของไทย — คุยกับ 4 เภสัชกร</h4>
+        <span class="cat">Beauty</span>
+      </div>
+    </div>
+    <div class="pop-item">
+      <span class="num">05</span>
+      <div>
+        <h4>แต่งคอนโด 28 ตร.ม. ให้ดูกว้างเป็นสองเท่า</h4>
+        <span class="cat">Home</span>
+      </div>
+    </div>
+    <div class="pop-item">
+      <span class="num">06</span>
+      <div>
+        <h4>Weekend Trip — ปาย ในมุมที่ยังเงียบอยู่</h4>
+        <span class="cat">Travel</span>
+      </div>
+    </div>
+    <div class="pop-item">
+      <span class="num">07</span>
+      <div>
+        <h4>เสื้อขาวตัวเดียว — แต่งได้กี่แบบในสัปดาห์นี้</h4>
+        <span class="cat">Style</span>
+      </div>
+    </div>
+    <div class="pop-item">
+      <span class="num">08</span>
+      <div>
+        <h4>สมดุลฮอร์โมนหลัง 30 — เริ่มที่มื้อเช้า</h4>
+        <span class="cat">Wellness</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PULL QUOTE -->
+<section class="quote">
+  <blockquote>ชีวิตดีๆ ไม่ได้ใหญ่ มันเล็กและซ้ำๆ ทุกวัน</blockquote>
+  <cite>— From "Slow Mornings", Issue 12</cite>
+</section>
+
+<!-- FOOD ROW -->
+<section class="section">
+  <div class="cat-row">
+    <div class="cat-row-head">
+      <h2>FOOD &amp; DRINK</h2>
+      <div class="cat-sub">
+        <a href="#">Restaurants</a>
+        <a href="#">Recipes</a>
+        <a href="#">Reviews</a>
+        <a href="#">See all →</a>
+      </div>
+    </div>
+    <div class="cat-grid">
+      <article class="cat-lead">
+        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <span class="cat">Restaurant Review</span>
+        <h3>Thaicoon — ไฟน์ไดนิ่งไทยที่เล่าเรื่องบ้านผ่านทุกจาน</h3>
+        <p>โต๊ะเดียว แปดที่นั่ง หนึ่งเชฟที่อยากพาคุณกลับไปกินข้าวบ้านยาย — ทำไม Thaicoon ถึงเป็นร้านที่คนพูดถึงที่สุดของซีซั่นนี้</p>
+        <div class="byline">
+          <img class="avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&q=80" alt="">
+          <span>By วิทย์ สรรพกุล</span>
+          <span class="dot"></span>
+          <span>9 min read</span>
+        </div>
+      </article>
+      <div class="cat-stack">
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Bakery</span>
+          <h4>Bread Ahead บุกกรุงเทพฯ — โดนัทคัสตาร์ดที่คนต่อคิวข้ามวัน</h4>
+          <div class="meta">New Opening · 6 min</div>
+        </article>
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1511920170033-f8396924c348?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Coffee</span>
+          <h4>Vasana Atelier — คาเฟ่ในบ้านเก่าที่ปั้นกาแฟเป็นงานคราฟต์</h4>
+          <div class="meta">15 เม.ย. · 6 min</div>
+        </article>
+      </div>
+      <div class="cat-stack">
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">LIFE Table</span>
+          <h4>LIFE Table x Wana Yook — ดินเนอร์ที่เล่าเรื่องวัตถุดิบไทยทั้งโต๊ะ</h4>
+          <div class="meta">Event · 4 min</div>
+        </article>
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1602928321679-560bb453f190?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Home Cooking</span>
+          <h4>หม้อเดียวทำได้ทั้งสัปดาห์ — คู่มือสำหรับคนขี้เกียจ</h4>
+          <div class="meta">Recipe · 4 min</div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRAVEL ROW - Monocle list style -->
+<section class="section">
+  <div class="cat-row">
+    <div class="cat-row-head">
+      <h2>PLACE</h2>
+      <div class="cat-sub">
+        <a href="#">City Guide</a>
+        <a href="#">Weekend</a>
+        <a href="#">Far Away</a>
+        <a href="#">See all →</a>
+      </div>
+    </div>
+    <div class="list-grid">
+      <article class="li">
+        <span class="idx">N° 01 · Weekend Trip</span>
+        <img src="https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <h4>24 ชั่วโมงในหัวหิน ที่ไม่มีเรื่องโรงแรม</h4>
+        <span class="cat">Travel · Hua Hin</span>
+        <p>ตลาดปลาเช้า ร้านก๋วยเตี๋ยวเจ้าเก่า และการว่ายน้ำตอนเย็น — หัวหินในมุมคนท้องถิ่น</p>
+      </article>
+      <article class="li">
+        <span class="idx">N° 02 · City Guide</span>
+        <img src="https://images.unsplash.com/photo-1470004914212-05527e49370b?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <h4>Taipei ครั้งที่สอง — 48 ชั่วโมงแบบนักกิน</h4>
+        <span class="cat">Travel · Taipei</span>
+        <p>ตลาดคืนที่ต้องไป และตลาดคืนที่ควรข้าม — คู่มือจากคนที่ไปมาสิบครั้ง</p>
+      </article>
+      <article class="li">
+        <span class="idx">N° 03 · Far Away</span>
+        <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <h4>ทำไมคนไทยถึงกลับไป Kyoto ซ้ำๆ ไม่เบื่อ</h4>
+        <span class="cat">Travel · Kyoto</span>
+        <p>ห้าคนเล่าถึงทริปที่เปลี่ยนชีวิต — และที่พักที่พวกเขาจองไว้แล้วสำหรับปีหน้า</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- WELLNESS + FITNESS combined row - cream background feel -->
+<section class="section" style="background:var(--cream); padding-top:80px; padding-bottom:80px;">
+  <div class="cat-row" style="margin-bottom:0;">
+    <div class="cat-row-head">
+      <h2>BODY &amp; MIND</h2>
+      <div class="cat-sub">
+        <a href="#">Mind</a>
+        <a href="#">Body</a>
+        <a href="#">Sleep</a>
+        <a href="#">See all →</a>
+      </div>
+    </div>
+    <div class="cat-grid">
+      <article class="cat-lead">
+        <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <span class="cat">Mind</span>
+        <h3>Nothing Is Urgent — ฝึกใจให้ช้าลงในเมืองที่อะไรก็ด่วนไปหมด</h3>
+        <p>คุยกับ 3 นักจิตวิทยาเรื่องการวางสิ่งที่ "ต้องทำตอนนี้" ลง — และทำไมความเร่งด่วนส่วนใหญ่ ไม่ได้เร่งด่วนจริง</p>
+        <div class="byline">
+          <img class="avatar" src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=80&q=80" alt="">
+          <span>By สิริภา ทองมงคล</span>
+          <span class="dot"></span>
+          <span>10 min read</span>
+        </div>
+      </article>
+      <div class="cat-stack">
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Hormone</span>
+          <h4>5 เทคนิครีเซ็ตสมดุลฮอร์โมน เริ่มได้ที่มื้อเช้า</h4>
+          <div class="meta">Guide · 8 min</div>
+        </article>
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Sleep</span>
+          <h4>Rain Sound — ทำไมเสียงฝน ถึงทำให้เราหลับลึกขึ้น</h4>
+          <div class="meta">Report · 7 min</div>
+        </article>
+      </div>
+      <div class="cat-stack">
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Snack</span>
+          <h4>โมจิกรีกโยเกิร์ต — ของว่างโปรตีนสูงที่ทำเองได้ใน 15 นาที</h4>
+          <div class="meta">Recipe · 5 min</div>
+        </article>
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1602928321679-560bb453f190?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Scent</span>
+          <h4>Le Labo เปิดตัวกลิ่นกำยานใหม่ — สำหรับมุมสงบในบ้าน</h4>
+          <div class="meta">New · 4 min</div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEAUTY duo -->
+<section class="section">
+  <div class="cat-row">
+    <div class="cat-row-head">
+      <h2>ACTIVE LEISURE</h2>
+      <div class="cat-sub">
+        <a href="#">Running</a>
+        <a href="#">Outdoor</a>
+        <a href="#">Gym</a>
+        <a href="#">See all →</a>
+      </div>
+    </div>
+    <div class="duo">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <span class="cat" style="margin-top:18px;">Outdoor</span>
+        <h3>เทรลรันรอบกรุงเทพฯ — 5 เส้นทางสีเขียวที่คนไม่รู้</h3>
+        <p>จากสวนรถไฟถึงริมเจ้าพระยา — เส้นทางวิ่งและปั่นจักรยานที่ไม่ต้องออกนอกเมือง</p>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <span class="cat" style="margin-top:18px;">Gym</span>
+        <h3>ยกเวทครั้งแรก — คู่มือสำหรับคนที่ไม่เคยเข้ายิม</h3>
+        <p>สี่ท่าพื้นฐาน ที่โค้ชไทยสามคนบอกว่าควรทำก่อนแตะเครื่องอื่น</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- STYLE - dark row -->
+<section class="dark-row">
+  <div class="cat-row" style="margin-bottom:0;">
+    <div class="cat-row-head">
+      <h2>LIVING</h2>
+      <div class="cat-sub">
+        <a href="#">Design</a>
+        <a href="#">Objects</a>
+        <a href="#">Travel by Rail</a>
+        <a href="#">See all →</a>
+      </div>
+    </div>
+    <div class="cat-grid" style="margin-top:28px;">
+      <article class="cat-lead">
+        <img src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <span class="cat">Design · Travel by Rail</span>
+        <h3>Heaven on Train — 5 รถไฟท่องเที่ยวดีไซน์สวยระดับโลก</h3>
+        <p>จาก Orient Express ถึง Seven Stars — ยุคทองของการเดินทางด้วยรถไฟที่งดงามที่สุดในโลก</p>
+        <div class="byline">
+          <img class="avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&q=80" alt="">
+          <span>By ณัชชา ภัทร</span>
+          <span class="dot" style="background:var(--ink);"></span>
+          <span>11 min read</span>
+        </div>
+      </article>
+      <div class="cat-stack">
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Objects</span>
+          <h4>เซรามิกคนไทย — 10 คนทำ ที่คนรักของสะสม</h4>
+          <div class="meta">Shopping edit · 5 min</div>
+        </article>
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Makers</span>
+          <h4>คุยกับ Ease — แบรนด์เสื้อยืดไทยที่ไม่รีบโต</h4>
+          <div class="meta">Interview · 12 min</div>
+        </article>
+      </div>
+      <div class="cat-stack">
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Wardrobe</span>
+          <h4>เชิ้ตขาวใบเดียว — 7 วัน 7 ลุค</h4>
+          <div class="meta">Style diary · 6 min</div>
+        </article>
+        <article class="card">
+          <img src="https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+          <span class="cat">Footwear</span>
+          <h4>รองเท้าหนังคู่เดียว — ที่ใส่ได้ทั้งเดือน</h4>
+          <div class="meta">Essentials · 4 min</div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH & GADGET list-grid -->
+<section class="section">
+  <div class="cat-row">
+    <div class="cat-row-head">
+      <h2>TECH &amp; GADGET</h2>
+      <div class="cat-sub">
+        <a href="#">Audio</a>
+        <a href="#">Wearable</a>
+        <a href="#">Desk</a>
+        <a href="#">See all →</a>
+      </div>
+    </div>
+    <div class="list-grid">
+      <article class="li">
+        <span class="idx">N° 01 · Audio</span>
+        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <h4>หูฟังตัดเสียงรบกวน — 6 รุ่นที่คุ้มค่าในปีนี้</h4>
+        <span class="cat">Tech · Audio</span>
+        <p>จากหมื่นถึงหมื่นห้า — เราลองจริงในชีวิตประจำวัน ไม่ใช่แค่ห้องแล็บ</p>
+      </article>
+      <article class="li">
+        <span class="idx">N° 02 · Wearable</span>
+        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <h4>นาฬิกาสุขภาพ — วัดอะไรได้บ้าง และอะไรที่ยังไม่ควรเชื่อ</h4>
+        <span class="cat">Tech · Wearable</span>
+        <p>คุยกับแพทย์ 2 คน เรื่องตัวเลขบนข้อมือ — อะไรจริง อะไรแค่ตัวเลข</p>
+      </article>
+      <article class="li">
+        <span class="idx">N° 03 · Desk</span>
+        <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=1200&h=628&fit=fillmax&fill=blur&q=85" alt="">
+        <h4>จัดโต๊ะทำงานให้หัวไม่ล้า — 8 กาดเจ็ตที่ได้ผลจริง</h4>
+        <span class="cat">Tech · Desk Setup</span>
+        <p>จากคนทำงานจริง — ของที่ช่วยลดอาการปวดคอและไหล่</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <div>
+    <div class="kicker" style="margin-bottom:20px;">The Weekly Letter</div>
+    <h2>จดหมายทุกเช้า<br><em>วันอาทิตย์</em></h2>
+    <p>หนึ่งเรื่องที่ควรอ่าน หนึ่งที่กินที่ควรลอง หนึ่งที่เที่ยวใกล้ๆ — รวมกัน 4 นาที ในกล่องอีเมลของคุณ</p>
+    <div class="mini">
+      <span>42,000 ผู้อ่าน</span>
+      <span>ไม่มีโฆษณา</span>
+      <span>ยกเลิกเมื่อไหร่ก็ได้</span>
+    </div>
+  </div>
+  <form onsubmit="event.preventDefault();">
+    <input type="email" placeholder="กรอกอีเมลของคุณ — your@email.com">
+    <button type="submit">Subscribe →</button>
+  </form>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-top">
+    <div class="foot-brand">
+      <div class="logo-lg">
+        <img src="logo-tsl.png" alt="THE STANDARD LIFE" style="height:60px; width:auto; filter:invert(1);">
+      </div>
+      <p>คู่มือกิน ดื่ม เที่ยว และ Well-being ของคนเมืองที่อยากมีสุขภาพกายและใจที่ดีอย่างยั่งยืน — The Urban Guide to Well-being</p>
+      <div class="socials">
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.8 3.8 0 0 1-1.38-.9 3.8 3.8 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.21 15.58 2.2 15.2 2.2 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.21 8.8 2.2 12 2.2M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63A5.99 5.99 0 0 0 1.97 2.03C1.22 2.77.77 3.56.46 4.48.16 5.24-.04 6.12-.1 7.39-.16 8.67-.17 9.08-.17 12.34s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.32.92.76 1.71 1.51 2.45a6 6 0 0 0 2.17 1.4c.76.3 1.64.5 2.91.56 1.28.06 1.69.07 4.95.07s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a6 6 0 0 0 2.17-1.4c.75-.74 1.19-1.53 1.51-2.45.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a6 6 0 0 0-1.4-2.17A6 6 0 0 0 19.52.63c-.76-.3-1.64-.5-2.91-.56C15.33.01 14.92 0 11.66 0Z"/><path d="M12 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84M12 16a4 4 0 1 1 4-4 4 4 0 0 1-4 4"/><circle cx="18.41" cy="5.59" r="1.44"/></svg></a>
+        <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8M9.6 15.6V8.4L15.8 12Z"/></svg></a>
+        <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M19.6 6.3a5.8 5.8 0 0 1-3.5-1.2 5.7 5.7 0 0 1-2.2-4H10V16a2.5 2.5 0 1 1-2.5-2.5 2.5 2.5 0 0 1 .7.1V9.6a6.2 6.2 0 0 0-.7-.04A6.4 6.4 0 1 0 13.9 16V8.9a9.2 9.2 0 0 0 5.7 2z"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M24 12a12 12 0 1 0-13.88 11.86v-8.39H7.08V12h3.04V9.36c0-3 1.79-4.67 4.53-4.67a18.4 18.4 0 0 1 2.68.24v2.95h-1.51c-1.49 0-1.95.92-1.95 1.87V12h3.32l-.53 3.47h-2.79v8.39A12 12 0 0 0 24 12"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h5>Sections</h5>
+      <ul>
+        <li><a href="#">Food &amp; Drink</a></li>
+        <li><a href="#">Place</a></li>
+        <li><a href="#">Active Leisure</a></li>
+        <li><a href="#">Body &amp; Mind</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>More</h5>
+      <ul>
+        <li><a href="#">Living</a></li>
+        <li><a href="#">Tech &amp; Gadget</a></li>
+        <li><a href="#">Podcast</a></li>
+        <li><a href="#">Video</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>About</h5>
+      <ul>
+        <li><a href="#">Our Story</a></li>
+        <li><a href="#">Editorial Team</a></li>
+        <li><a href="#">Advertise</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>The Family</h5>
+      <ul>
+        <li><a href="#">THE STANDARD</a></li>
+        <li><a href="#">THE STANDARD Wealth</a></li>
+        <li><a href="#">THE STANDARD Sport</a></li>
+        <li><a href="#">THE STANDARD Pop</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div class="l">
+      <span>© 2026 THE STANDARD CO., LTD.</span>
+      <span>All rights reserved</span>
+    </div>
+    <div class="l">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">RSS</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Hamburger toggle
+  (function(){
+    const btn = document.getElementById('navHamburger');
+    const nav = document.getElementById('mainNav');
+    if(!btn || !nav) return;
+    const openIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+    const closeIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+    btn.addEventListener('click', () => {
+      const open = nav.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+      btn.innerHTML = open ? closeIcon : openIcon;
+    });
+    nav.querySelectorAll('ul a').forEach(a => a.addEventListener('click', () => {
+      nav.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.innerHTML = openIcon;
+    }));
+  })();
+
+  // Sticky nav shadow on scroll
+  (function(){
+    const nav = document.querySelector('.nav');
+    if(!nav) return;
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  })();
+
+  // Theme toggle with localStorage + system preference
+  (function(){
+    const root = document.documentElement;
+    const saved = localStorage.getItem('tsl-theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initial = saved || (systemDark ? 'dark' : 'light');
+    root.setAttribute('data-theme', initial);
+
+    const btn = document.getElementById('themeToggle');
+    if(btn){
+      btn.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('tsl-theme', next);
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>
