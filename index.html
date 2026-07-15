@@ -352,7 +352,7 @@
     .logo-sub{text-align:center; padding:0 16px;}
 
     /* sticky nav → hamburger drawer */
-    .nav{padding:0; justify-content:flex-start; border-bottom:1px solid var(--line);}
+    .nav{padding:0; flex-direction:column; align-items:stretch; overflow:visible; border-bottom:1px solid var(--line);}
     .nav ul{
       display:none;
       flex-direction:column;
@@ -365,9 +365,11 @@
     .nav li a{padding:14px 20px; font-size:13px; letter-spacing:.1em; border-bottom:1px solid var(--line-soft); width:100%;}
     .nav li + li a{border-left:0;}
     .nav li:last-child a{border-bottom:0;}
-    .nav-meta{padding:14px 20px; border-top:1px solid var(--line); display:flex;}
-    .nav-meta .search-label{display:none;}
-    .hamburger{display:inline-grid; margin-left:8px;}
+    .nav-meta{padding:14px 20px; border-top:1px solid var(--line); display:none; width:100%;}
+    .nav.open .nav-meta{display:flex;}
+    .nav-meta .search-label{display:inline;}
+    /* only the working nav hamburger shows; masthead one stays hidden */
+    .nav-hamburger-wrap .hamburger{display:inline-grid;}
     .nav-hamburger-wrap{display:flex; align-items:center; justify-content:space-between; padding:0 16px; width:100%; min-height:52px;}
     .nav-hamburger-wrap .brand-hint{font-family:var(--mono); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted);}
 
