@@ -342,10 +342,11 @@
     body{font-size:15px;}
 
     /* masthead */
-    .masthead-top{grid-template-columns: auto 1fr auto; padding:14px 16px 12px; gap:12px;}
+    .masthead-top{display:block; position:relative; padding:14px 16px 12px;}
     .masthead-top > div:first-child{display:none;} /* hide date col */
     .mh-left{display:none;}
-    .mh-right{gap:10px;}
+    /* float the dark-mode toggle top-right so the logo can center in the full width */
+    .mh-right{position:absolute; top:18px; right:16px; gap:10px;}
     .logo{align-items:center;}
     .logo-img{height:clamp(52px,12vw,72px);}
     .logo-sub .th{font-size:12px;}
