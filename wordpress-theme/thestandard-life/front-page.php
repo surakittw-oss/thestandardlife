@@ -9,15 +9,26 @@ get_header();
 
 /* ---------- Resolve the cover story (first sticky, else latest) ---------- */
 $stickies   = get_option( 'sticky_posts' );
-$cover_args = ! empty( $stickies )
-	? array( 'post__in' => $stickies, 'posts_per_page' => 1, 'ignore_sticky_posts' => true )
-	: array( 'posts_per_page' => 1, 'ignore_sticky_posts' => true );
-$cover_q    = new WP_Query( $cover_args );
+$cover_args = array(
+	'post_type'           => TSL_CPT,
+	'posts_per_page'      => 1,
+	'ignore_sticky_posts' => true,
+);
+if ( ! empty( $stickies ) ) {
+	$cover_args['post__in'] = $stickies;
+}
+$cover_q = new WP_Query( $cover_args );
+if ( ! $cover_q->have_posts() && ! empty( $cover_args['post__in'] ) ) {
+	// The sticky post(s) belong to a different content type — fall back to latest.
+	unset( $cover_args['post__in'] );
+	$cover_q = new WP_Query( $cover_args );
+}
 $cover_post = $cover_q->have_posts() ? $cover_q->posts[0] : null;
 $cover_id   = $cover_post ? $cover_post->ID : 0;
 
 /* ---------- Recent feed for the hero side columns ---------- */
 $feed       = new WP_Query( array(
+	'post_type'           => TSL_CPT,
 	'posts_per_page'      => 6,
 	'post__not_in'        => array( $cover_id ),
 	'ignore_sticky_posts' => true,
@@ -78,13 +89,19 @@ $hero_right = array_slice( $feed_posts, 3, 3 );
 <!-- EDITOR'S PICK -->
 <?php
 $pick_q = new WP_Query( array(
+	'post_type'           => TSL_CPT,
 	'posts_per_page'      => 3,
 	'tag'                 => 'editors-pick',
 	'ignore_sticky_posts' => true,
 	'no_found_rows'       => true,
 ) );
 if ( ! $pick_q->have_posts() ) {
-	$pick_q = new WP_Query( array( 'posts_per_page' => 3, 'ignore_sticky_posts' => true, 'no_found_rows' => true ) );
+	$pick_q = new WP_Query( array(
+		'post_type'           => TSL_CPT,
+		'posts_per_page'      => 3,
+		'ignore_sticky_posts' => true,
+		'no_found_rows'       => true,
+	) );
 }
 if ( $pick_q->have_posts() ) :
 	$badges = array( __( 'Feature of the week', 'thestandard-life' ), __( "Editor's note", 'thestandard-life' ), __( 'Reading guide', 'thestandard-life' ) );
@@ -118,6 +135,7 @@ if ( $pick_q->have_posts() ) :
 <!-- POPULAR THIS WEEK -->
 <?php
 $pop_q = new WP_Query( array(
+	'post_type'           => TSL_CPT,
 	'posts_per_page'      => 8,
 	'orderby'             => 'comment_count',
 	'ignore_sticky_posts' => true,
@@ -130,7 +148,7 @@ if ( $pop_q->have_posts() ) : ?>
 				<div class="kicker" style="margin-bottom:16px;"><?php esc_html_e( 'Popular this week · อ่านมากที่สุด', 'thestandard-life' ); ?></div>
 				<h2 class="title"><?php esc_html_e( 'สิ่งที่ผู้อ่านกำลังคุยกัน', 'thestandard-life' ); ?></h2>
 			</div>
-			<a class="more" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'See the list →', 'thestandard-life' ); ?></a>
+			<a class="more" href="<?php echo esc_url( get_post_type_archive_link( TSL_CPT ) ); ?>"><?php esc_html_e( 'See the list →', 'thestandard-life' ); ?></a>
 		</div>
 		<div class="popular">
 			<?php
@@ -154,6 +172,7 @@ if ( $pop_q->have_posts() ) : ?>
 <!-- CATEGORY ROWS -->
 <?php
 $cats = get_categories( array(
+	'taxonomy'   => TSL_TAX,
 	'orderby'    => 'count',
 	'order'      => 'DESC',
 	'number'     => 6,

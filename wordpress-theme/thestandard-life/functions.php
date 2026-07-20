@@ -10,6 +10,71 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'TSL_VERSION', '1.0.0' );
+define( 'TSL_CPT', 'life_post' );      // Custom Post Type slug for LIFE content.
+define( 'TSL_TAX', 'life_category' );  // Custom taxonomy slug for LIFE sections (Food & Drink, Place, ...).
+
+/**
+ * Register the "LIFE" custom post type + its own taxonomy.
+ *
+ * We register this in code (not via CPT UI) because the theme's templates
+ * are wired directly to these exact slugs — keeping registration in the
+ * theme means the whole thing stays portable as one package. If CPT UI is
+ * active on this site, do NOT also register `life_post` / `life_category`
+ * there — a duplicate registration will conflict with this one.
+ */
+function tsl_register_cpt() {
+	register_post_type( TSL_CPT, array(
+		'labels'       => array(
+			'name'               => __( 'LIFE Articles', 'thestandard-life' ),
+			'singular_name'      => __( 'LIFE Article', 'thestandard-life' ),
+			'add_new_item'       => __( 'Add New LIFE Article', 'thestandard-life' ),
+			'edit_item'          => __( 'Edit LIFE Article', 'thestandard-life' ),
+			'all_items'          => __( 'All LIFE Articles', 'thestandard-life' ),
+			'search_items'       => __( 'Search LIFE Articles', 'thestandard-life' ),
+			'not_found'          => __( 'No LIFE articles found', 'thestandard-life' ),
+			'menu_name'          => __( 'THE STANDARD LIFE', 'thestandard-life' ),
+		),
+		'public'       => true,
+		'has_archive'  => true,
+		'show_in_rest' => true, // Gutenberg + REST API support.
+		'menu_icon'    => 'dashicons-book-alt',
+		'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'author', 'revisions', 'custom-fields' ),
+		'rewrite'      => array( 'slug' => 'life', 'with_front' => false ),
+		'query_var'    => TSL_CPT,
+	) );
+
+	register_taxonomy( TSL_TAX, array( TSL_CPT ), array(
+		'labels'       => array(
+			'name'          => __( 'LIFE Categories', 'thestandard-life' ),
+			'singular_name' => __( 'LIFE Category', 'thestandard-life' ),
+			'menu_name'     => __( 'Categories', 'thestandard-life' ),
+		),
+		'hierarchical' => true, // behaves like the built-in Category, not Tag.
+		'public'       => true,
+		'show_in_rest' => true,
+		'rewrite'      => array( 'slug' => 'life-category', 'with_front' => false ),
+	) );
+
+	// Let LIFE articles also use the built-in Tags (e.g. an "editors-pick" tag
+	// to feature posts on the front page) without pulling in the built-in
+	// Category taxonomy, which stays reserved for the site's other content.
+	register_taxonomy_for_object_type( 'post_tag', TSL_CPT );
+}
+add_action( 'init', 'tsl_register_cpt' );
+
+/**
+ * Flush rewrite rules once after the CPT above is registered for the first
+ * time, so /life/... and /life-category/... URLs work without manually
+ * visiting Settings > Permalinks. Runs after tsl_register_cpt (priority 10)
+ * on the same 'init' hook, so the rules it flushes already include ours.
+ */
+function tsl_maybe_flush_rewrites() {
+	if ( ! get_option( 'tsl_rewrites_flushed' ) ) {
+		flush_rewrite_rules();
+		update_option( 'tsl_rewrites_flushed', 1 );
+	}
+}
+add_action( 'init', 'tsl_maybe_flush_rewrites', 20 );
 
 /**
  * Theme setup.
@@ -101,14 +166,47 @@ function tsl_reading_time( $post_id = null ) {
 }
 
 /**
- * Primary category name for a post (first assigned category).
+ * Primary LIFE category term for a post (first assigned term in the
+ * life_category taxonomy). Falls back to the built-in Category so the
+ * same template parts still work on non-LIFE content, if ever reused.
+ *
+ * @param int|null $post_id Post ID.
+ * @return WP_Term|null
+ */
+function tsl_primary_category_term( $post_id = null ) {
+	$post_id = $post_id ? $post_id : get_the_ID();
+	$terms   = get_the_terms( $post_id, TSL_TAX );
+	if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+		return $terms[0];
+	}
+	$cats = get_the_category( $post_id );
+	return ! empty( $cats ) ? $cats[0] : null;
+}
+
+/**
+ * Primary category name for a post.
  *
  * @param int|null $post_id Post ID.
  * @return string
  */
 function tsl_primary_category( $post_id = null ) {
-	$cats = get_the_category( $post_id ? $post_id : get_the_ID() );
-	return ! empty( $cats ) ? $cats[0]->name : '';
+	$term = tsl_primary_category_term( $post_id );
+	return $term ? $term->name : '';
+}
+
+/**
+ * Archive/category-listing link for a post's primary LIFE category.
+ *
+ * @param int|null $post_id Post ID.
+ * @return string URL, or '' if the post has no category.
+ */
+function tsl_primary_category_link( $post_id = null ) {
+	$term = tsl_primary_category_term( $post_id );
+	if ( ! $term ) {
+		return '';
+	}
+	$link = get_term_link( $term );
+	return is_wp_error( $link ) ? '' : $link;
 }
 
 /**

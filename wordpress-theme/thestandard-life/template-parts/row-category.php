@@ -12,7 +12,14 @@ if ( ! $cat ) {
 }
 
 $q = new WP_Query( array(
-	'cat'                 => $cat->term_id,
+	'post_type'           => TSL_CPT,
+	'tax_query'           => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+		array(
+			'taxonomy' => TSL_TAX,
+			'field'    => 'term_id',
+			'terms'    => $cat->term_id,
+		),
+	),
 	'posts_per_page'      => 5,
 	'ignore_sticky_posts' => true,
 	'no_found_rows'       => true,
@@ -31,7 +38,8 @@ $posts = $q->posts;
 		<div class="cat-row-head">
 			<h2><?php echo esc_html( $cat->name ); ?></h2>
 			<div class="cat-sub">
-				<a href="<?php echo esc_url( get_category_link( $cat->term_id ) ); ?>"><?php esc_html_e( 'See all →', 'thestandard-life' ); ?></a>
+				<?php $cat_link = get_term_link( $cat ); ?>
+				<a href="<?php echo esc_url( is_wp_error( $cat_link ) ? '#' : $cat_link ); ?>"><?php esc_html_e( 'See all →', 'thestandard-life' ); ?></a>
 			</div>
 		</div>
 		<div class="cat-grid"<?php echo $dark ? ' style="margin-top:28px;"' : ''; ?>>

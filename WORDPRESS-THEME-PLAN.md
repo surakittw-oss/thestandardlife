@@ -1,7 +1,14 @@
 # แผนแปลง THE STANDARD LIFE → WordPress Classic Theme
 
-เอกสารนี้คือแผนงาน (ยังไม่ลงมือ) สำหรับแปลง `index.html` + `articles/thaicoon.html`
-ให้เป็น WordPress theme แบบ Classic PHP
+เอกสารนี้คือแผนงานเริ่มต้น (ตอนเขียนยังไม่ได้ลงมือ) สำหรับแปลง `index.html` +
+`articles/thaicoon.html` ให้เป็น WordPress theme แบบ Classic PHP
+
+> **อัปเดต:** theme สร้างเสร็จแล้วที่ `wordpress-theme/thestandard-life/`
+> (ดู `readme.txt` ในนั้นสำหรับขั้นตอนติดตั้งจริง) และภายหลังได้เปลี่ยนสถาปัตยกรรม
+> จาก Post+Category ธรรมดา → **Custom Post Type `life_post` + taxonomy
+> `life_category`** เพราะเว็บปลายทางมีเนื้อหาประเภทอื่นปนอยู่ด้วย
+> (แยกเนื้อหา LIFE ออกจากเนื้อหาอื่นอย่างชัดเจน ไม่ใช้ Post/Category ที่ใช้ร่วมกับเนื้อหาอื่น)
+> เอกสารด้านล่างนี้เก็บไว้เป็นบันทึกแนวคิดตั้งต้น ส่วน readme.txt คือของจริงที่ใช้งาน
 
 ---
 
