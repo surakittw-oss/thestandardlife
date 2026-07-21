@@ -88,6 +88,34 @@ function tsl_cover_image( $size = 'tsl-cover' ) {
 }
 
 /**
+ * Every card/hero image in this design is sized entirely by its container's
+ * CSS `aspect-ratio` (16/9, 4/3, --cover, etc.) with object-fit:cover. But
+ * WordPress auto-adds width/height attributes to every rendered <img>, which
+ * browsers treat as the element's *intrinsic* aspect ratio — and per the CSS
+ * spec, that intrinsic ratio wins over a plain `aspect-ratio: <ratio>` CSS
+ * value. The result: images render at their native crop ratio instead of the
+ * container's ratio, and since different WP image sizes have different
+ * native ratios, this looks "inconsistent" across breakpoints/templates.
+ *
+ * Filtering the $attr array (via wp_get_attachment_image_attributes) does NOT
+ * work here: wp_get_attachment_image() reads width/height into its own local
+ * vars *before* that filter runs, then builds the `width="…" height="…"`
+ * part of the tag straight from those vars regardless of what the filter did
+ * to $attr. The only reliable point to remove them is the final HTML string,
+ * via the `wp_get_attachment_image` filter.
+ *
+ * @param string $html Attachment image HTML.
+ * @return string
+ */
+function tsl_strip_image_dimensions( $html ) {
+	if ( tsl_current_view() ) {
+		$html = preg_replace( '/\s(width|height)="\d+"/', '', $html );
+	}
+	return $html;
+}
+add_filter( 'wp_get_attachment_image', 'tsl_strip_image_dimensions' );
+
+/**
  * Render a list of WP_Post objects using a plugin template part.
  *
  * @param WP_Post[] $items   Posts.
