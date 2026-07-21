@@ -71,6 +71,63 @@ function tsl_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'tsl_enqueue_assets' );
 
 /**
+ * On LIFE pages, drop the active theme's CSS (and block global styles) so the
+ * page is governed only by life.css. Otherwise the theme's body background /
+ * typography leaks in through wp_head() and fights the LIFE design — most
+ * visibly breaking dark mode (theme keeps the body white). Runs late so it
+ * sees everything the theme queued.
+ */
+function tsl_dequeue_theme_styles() {
+	if ( ! tsl_current_view() ) {
+		return;
+	}
+
+	$keep = array( 'tsl-life', 'tsl-fonts', 'admin-bar', 'dashicons' );
+	$theme_dirs = array(
+		trailingslashit( get_stylesheet_directory_uri() ),
+		trailingslashit( get_template_directory_uri() ),
+	);
+
+	$styles = wp_styles();
+	foreach ( (array) $styles->queue as $handle ) {
+		if ( in_array( $handle, $keep, true ) ) {
+			continue;
+		}
+
+		// Always drop block-theme global styles / core block CSS.
+		if ( in_array( $handle, array( 'global-styles', 'wp-block-library', 'wp-block-library-theme', 'classic-theme-styles', 'wp-webfonts' ), true ) ) {
+			wp_dequeue_style( $handle );
+			continue;
+		}
+
+		// Drop anything served from the active theme's folder.
+		$src = isset( $styles->registered[ $handle ] ) ? $styles->registered[ $handle ]->src : '';
+		if ( $src ) {
+			foreach ( $theme_dirs as $dir ) {
+				if ( 0 === strpos( $src, $dir ) ) {
+					wp_dequeue_style( $handle );
+					break;
+				}
+			}
+		}
+	}
+}
+add_action( 'wp_enqueue_scripts', 'tsl_dequeue_theme_styles', 100 );
+
+/**
+ * Block themes also inline their global styles via a wp_head hook (not the
+ * queue), so remove that too on LIFE pages.
+ */
+function tsl_remove_global_inline_styles() {
+	if ( tsl_current_view() ) {
+		remove_action( 'wp_enqueue_scripts', 'wp_enqueue_global_styles' );
+		remove_action( 'wp_footer', 'wp_enqueue_global_styles', 1 );
+		remove_action( 'wp_head', 'wp_enqueue_global_styles_custom_css' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'tsl_remove_global_inline_styles', 9 );
+
+/**
  * Preconnect for Google Fonts (only meaningful when LIFE assets load).
  */
 function tsl_resource_hints( $urls, $relation_type ) {
