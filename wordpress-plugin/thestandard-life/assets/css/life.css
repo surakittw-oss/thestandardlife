@@ -515,7 +515,10 @@
   .prose a{color:var(--ink); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; text-decoration-color:var(--line-strong);}
   .prose a:hover{text-decoration-color:var(--hot); color:var(--hot);}
   .prose figure{margin:44px 0;}
-  .prose figure img{width:100%; aspect-ratio:3/2; object-fit:cover; border-radius:var(--r); background:var(--cream);}
+  /* Content images (incl. Gutenberg <figure> blocks) show at their natural
+     ratio — never force a fixed aspect-ratio/crop, which squished uploads. */
+  .prose figure img,
+  .prose img{display:block; width:100%; height:auto; border-radius:var(--r); background:var(--cream);}
   .prose figure.wide{margin-left:0; margin-right:0; width:100%;}
   .prose figcaption{font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:12px;}
   .prose blockquote{margin:48px 0; padding:8px 0 8px 28px; border-left:3px solid var(--ink); font-family:var(--sans); font-weight:500; font-size:26px; line-height:1.45; letter-spacing:-.01em; color:var(--ink);}
