@@ -194,14 +194,14 @@
   .cat-stack .meta{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:8px;}
 
   /* alt row: list style, Monocle-like */
-  .list-grid{display:grid; grid-template-columns: repeat(3, 1fr); gap:0;}
+  .list-grid{display:grid; grid-template-columns: repeat(3, 1fr); gap:0; padding:0 48px;}
   .list-grid .li{padding:22px 24px; border-left:1px solid var(--line);}
   .list-grid .li:first-child{border-left:0; padding-left:0; padding-right:48px;}
   .list-grid .li .idx{font-family:var(--mono); font-size:11px; letter-spacing:.15em; color:var(--muted);}
   .list-grid .li img{aspect-ratio:var(--cover); object-fit:contain; width:100%; background:var(--cream); margin-top:12px; border-radius:var(--r);}
   .list-grid .li h4{font-family:var(--sans); font-weight:600; font-size:19px; line-height:1.45; margin-top:14px; letter-spacing:-.01em;}
   .list-grid .li .cat{display:block; margin-top:10px; font-family:var(--mono); font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink);}
-  .list-grid .li p{color:var(--muted); font-size:13.5px; margin-top:8px;}
+  .list-grid .li p{color:var(--muted); font-size:13.5px; margin-top:8px; display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
 
   /* duo row (BEAUTY) */
   .duo{display:grid; grid-template-columns: 1fr 1fr; gap:40px;}
@@ -281,6 +281,7 @@
     .masthead-top{padding:24px 32px 18px;}
     .nav{padding:0 32px;}
     .section-head{padding:0 32px;}
+    .list-grid{padding:0 32px;}
     .popular{padding:0 32px;}
     .pick{padding:0 32px; gap:32px;}
     .cat-row{padding:0 32px;}
@@ -321,6 +322,7 @@
     .pick-card:nth-child(3){grid-column:auto; display:block;}
     .pick-card:nth-child(3) h3{margin-top:16px;}
     .section-head{padding:0 24px;}
+    .list-grid{padding:0 24px;}
     .popular{grid-template-columns:repeat(2,1fr); padding:0 24px;}
     .cat-row{padding:0 24px;}
     .guide{padding:0 24px;}
@@ -404,7 +406,7 @@
     .cat-lead{grid-column:auto;}
     .cat-lead h3{font-size:22px;}
     .cat-stack{gap:16px;}
-    .list-grid{grid-template-columns:1fr;}
+    .list-grid{grid-template-columns:1fr; padding:0 16px;}
     .list-grid .li{border-left:0; border-top:1px solid var(--line); padding:20px 0;}
     .list-grid .li:first-child{border-top:0; padding-top:0; padding-right:0;}
     .list-grid .li h4{font-size:19px;}
@@ -449,6 +451,7 @@
     .pick{padding:0 14px;}
     .cat-row{padding:0 14px;}
     .section-head{padding:0 14px;}
+    .list-grid{padding:0 14px;}
     .guide{padding:0 14px;}
     .newsletter{padding:44px 14px;}
     footer{padding:36px 14px 18px;}
