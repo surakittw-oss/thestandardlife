@@ -42,7 +42,7 @@ $hero_right = array_slice( $feed_posts, 3, 3 );
 <!-- HERO -->
 <section class="hero">
 	<aside class="hero-side">
-		<div class="kicker"><?php esc_html_e( 'In this issue', 'thestandard-life' ); ?></div>
+		<div class="kicker"><?php echo esc_html( tsl_opt( 'tsl_issue_label' ) ); ?></div>
 		<?php tsl_render_cards( $hero_left, 'card-small', true ); ?>
 	</aside>
 
@@ -74,16 +74,94 @@ $hero_right = array_slice( $feed_posts, 3, 3 );
 	</article>
 
 	<aside class="hero-side">
-		<div class="kicker"><?php esc_html_e( 'More from LIFE', 'thestandard-life' ); ?></div>
-		<?php tsl_render_cards( $hero_right, 'card-small', true ); ?>
+		<?php
+		$letter_title = tsl_opt( 'tsl_letter_title' );
+		$podcast_title = tsl_opt( 'tsl_podcast_title' );
+		$event_title   = tsl_opt( 'tsl_event_title' );
+		$has_editorial = $letter_title || $podcast_title || $event_title;
+		?>
+
+		<?php if ( $letter_title ) : ?>
+			<div>
+				<div class="kicker"><?php echo esc_html( tsl_opt( 'tsl_letter_kicker' ) ); ?></div>
+				<h4 style="margin-top:14px; font-size:18px; font-family:var(--sans); font-weight:600; line-height:1.5;"><?php echo esc_html( $letter_title ); ?></h4>
+				<?php if ( tsl_opt( 'tsl_letter_body' ) ) : ?>
+					<p style="color:var(--muted); font-size:13.5px; margin-top:10px;"><?php echo esc_html( tsl_opt( 'tsl_letter_body' ) ); ?></p>
+				<?php endif; ?>
+				<?php if ( tsl_opt( 'tsl_letter_author' ) ) : ?>
+					<div class="byline" style="margin-top:14px;">
+						<?php $avatar = tsl_opt( 'tsl_letter_avatar' ); ?>
+						<?php if ( $avatar ) : ?>
+							<img class="avatar" src="<?php echo esc_url( $avatar ); ?>" alt="">
+						<?php else : ?>
+							<span class="avatar" style="display:inline-block; width:24px; height:24px; border-radius:50%; background:var(--line);"></span>
+						<?php endif; ?>
+						<span><?php echo esc_html( tsl_opt( 'tsl_letter_author' ) ); ?></span>
+					</div>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
+
+		<?php if ( $podcast_title ) : ?>
+			<?php if ( $letter_title ) : ?><hr><?php endif; ?>
+			<div>
+				<div class="kicker"><?php esc_html_e( 'Listen', 'thestandard-life' ); ?></div>
+				<?php $pod_link = tsl_opt( 'tsl_podcast_link' ); ?>
+				<a class="small-card" style="margin-top:14px;" href="<?php echo $pod_link ? esc_url( $pod_link ) : '#'; ?>"<?php echo $pod_link ? ' target="_blank" rel="noopener"' : ''; ?>>
+					<?php $pod_img = tsl_opt( 'tsl_podcast_image' ); ?>
+					<?php if ( $pod_img ) : ?>
+						<img src="<?php echo esc_url( $pod_img ); ?>" alt="">
+					<?php else : ?>
+						<img src="<?php echo esc_url( TSL_URL . 'assets/img/logo-tsl.png' ); ?>" alt="" style="background:var(--cream);padding:14%;object-fit:contain;">
+					<?php endif; ?>
+					<div>
+						<span class="eyebrow"><?php echo esc_html( tsl_opt( 'tsl_podcast_kicker' ) ); ?></span>
+						<h5 style="margin-top:6px;"><?php echo esc_html( $podcast_title ); ?></h5>
+						<?php if ( tsl_opt( 'tsl_podcast_meta' ) ) : ?>
+							<div class="meta" style="margin-top:8px; color:var(--muted);"><?php echo esc_html( tsl_opt( 'tsl_podcast_meta' ) ); ?></div>
+						<?php endif; ?>
+					</div>
+				</a>
+			</div>
+		<?php endif; ?>
+
+		<?php if ( $event_title ) : ?>
+			<?php if ( $letter_title || $podcast_title ) : ?><hr><?php endif; ?>
+			<div>
+				<div class="kicker"><?php esc_html_e( 'Upcoming Event', 'thestandard-life' ); ?></div>
+				<?php $ev_link = tsl_opt( 'tsl_event_link' ); ?>
+				<h5 style="font-family:var(--sans); font-size:16px; margin-top:12px; font-weight:600; line-height:1.5;">
+					<?php if ( $ev_link ) : ?>
+						<a href="<?php echo esc_url( $ev_link ); ?>" style="color:inherit;"><?php echo esc_html( $event_title ); ?></a>
+					<?php else : ?>
+						<?php echo esc_html( $event_title ); ?>
+					<?php endif; ?>
+				</h5>
+				<?php if ( tsl_opt( 'tsl_event_meta' ) ) : ?>
+					<div class="meta" style="margin-top:8px;"><?php echo esc_html( tsl_opt( 'tsl_event_meta' ) ); ?></div>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
+
+		<?php
+		// Fallback: if the editor cleared every curated block, show recent posts.
+		if ( ! $has_editorial ) {
+			echo '<div class="kicker">' . esc_html__( 'More from LIFE', 'thestandard-life' ) . '</div>';
+			tsl_render_cards( $hero_right, 'card-small', true );
+		}
+		?>
 	</aside>
 </section>
 
 <!-- PULL QUOTE -->
-<section class="quote">
-	<blockquote><?php esc_html_e( 'ชีวิตดีๆ ไม่ได้ใหญ่ มันเล็กและซ้ำๆ ทุกวัน', 'thestandard-life' ); ?></blockquote>
-	<cite><?php esc_html_e( '— THE STANDARD LIFE', 'thestandard-life' ); ?></cite>
-</section>
+<?php if ( tsl_opt( 'tsl_quote_text' ) ) : ?>
+	<section class="quote">
+		<blockquote><?php echo esc_html( tsl_opt( 'tsl_quote_text' ) ); ?></blockquote>
+		<?php if ( tsl_opt( 'tsl_quote_cite' ) ) : ?>
+			<cite><?php echo esc_html( tsl_opt( 'tsl_quote_cite' ) ); ?></cite>
+		<?php endif; ?>
+	</section>
+<?php endif; ?>
 
 <!-- EDITOR'S PICK -->
 <?php
