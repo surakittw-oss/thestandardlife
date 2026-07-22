@@ -24,7 +24,7 @@ define( 'TSL_URL', plugin_dir_url( __FILE__ ) );    // https://.../thestandard-l
 
 require_once TSL_DIR . 'inc/helpers.php';
 require_once TSL_DIR . 'inc/template-loader.php';
-require_once TSL_DIR . 'inc/customizer.php';
+require_once TSL_DIR . 'inc/settings-page.php';
 
 /**
  * Register the LIFE custom post type + its own taxonomy.
