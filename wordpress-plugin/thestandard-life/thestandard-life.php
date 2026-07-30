@@ -32,13 +32,13 @@ require_once TSL_DIR . 'inc/settings-page.php';
 function tsl_register_cpt() {
 	register_post_type( TSL_CPT, array(
 		'labels'       => array(
-			'name'          => __( 'LIFE Articles', 'thestandard-life' ),
-			'singular_name' => __( 'LIFE Article', 'thestandard-life' ),
-			'add_new_item'  => __( 'Add New LIFE Article', 'thestandard-life' ),
-			'edit_item'     => __( 'Edit LIFE Article', 'thestandard-life' ),
-			'all_items'     => __( 'All LIFE Articles', 'thestandard-life' ),
-			'search_items'  => __( 'Search LIFE Articles', 'thestandard-life' ),
-			'not_found'     => __( 'No LIFE articles found', 'thestandard-life' ),
+			'name'          => __( 'LIFE', 'thestandard-life' ),
+			'singular_name' => __( 'LIFE', 'thestandard-life' ),
+			'add_new_item'  => __( 'Add New LIFE', 'thestandard-life' ),
+			'edit_item'     => __( 'Edit LIFE', 'thestandard-life' ),
+			'all_items'     => __( 'All LIFE', 'thestandard-life' ),
+			'search_items'  => __( 'Search LIFE', 'thestandard-life' ),
+			'not_found'     => __( 'No LIFE found', 'thestandard-life' ),
 			'menu_name'     => __( 'THE STANDARD LIFE', 'thestandard-life' ),
 		),
 		'public'       => true,
