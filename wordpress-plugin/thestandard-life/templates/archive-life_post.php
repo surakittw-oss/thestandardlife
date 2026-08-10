@@ -105,7 +105,8 @@ $hero_right = array_slice( $feed_posts, 3, 3 );
 		<?php if ( $podcast_title ) : ?>
 			<?php if ( $letter_title ) : ?><hr><?php endif; ?>
 			<div>
-				<div class="kicker"><?php esc_html_e( 'Listen', 'thestandard-life' ); ?></div>
+				<?php $pod_type = tsl_opt( 'tsl_podcast_type' ); ?>
+				<div class="kicker"><?php echo esc_html( 'video' === $pod_type ? __( 'Watch', 'thestandard-life' ) : __( 'Listen', 'thestandard-life' ) ); ?></div>
 				<?php $pod_link = tsl_opt( 'tsl_podcast_link' ); ?>
 				<a class="small-card" style="margin-top:14px;" href="<?php echo $pod_link ? esc_url( $pod_link ) : '#'; ?>"<?php echo $pod_link ? ' target="_blank" rel="noopener"' : ''; ?>>
 					<?php $pod_img = tsl_opt( 'tsl_podcast_image' ); ?>

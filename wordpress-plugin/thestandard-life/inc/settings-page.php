@@ -38,8 +38,17 @@ function tsl_home_sections() {
 			),
 		),
 		'podcast'  => array(
-			'title'  => __( 'Podcast (Listen block)', 'thestandard-life' ),
+			'title'  => __( 'Podcast / Video (Watch & Listen block)', 'thestandard-life' ),
 			'fields' => array(
+				'tsl_podcast_type'   => array(
+					__( 'ประเภทสื่อ', 'thestandard-life' ),
+					'select',
+					'podcast',
+					array(
+						'podcast' => __( 'Podcast', 'thestandard-life' ),
+						'video'   => __( 'Video (YouTube)', 'thestandard-life' ),
+					),
+				),
 				'tsl_podcast_kicker' => array( __( 'Label', 'thestandard-life' ), 'text', 'Podcast · EP.48' ),
 				'tsl_podcast_title'  => array( __( 'Title', 'thestandard-life' ), 'text', 'Slow Mornings — ชีวิตช้าๆ ในเมืองเร็วๆ' ),
 				'tsl_podcast_meta'   => array( __( 'Meta text', 'thestandard-life' ), 'text', '42 min · New episode' ),
@@ -196,6 +205,20 @@ function tsl_render_field( $key, $field ) {
 	$value = tsl_opt( $key );
 
 	switch ( $type ) {
+		case 'select':
+			$options = isset( $field[3] ) ? $field[3] : array();
+			printf( '<select name="%1$s" id="%1$s">', esc_attr( $key ) );
+			foreach ( $options as $opt_value => $opt_label ) {
+				printf(
+					'<option value="%1$s"%2$s>%3$s</option>',
+					esc_attr( $opt_value ),
+					selected( $value, $opt_value, false ),
+					esc_html( $opt_label )
+				);
+			}
+			echo '</select>';
+			break;
+
 		case 'textarea':
 			printf(
 				'<textarea name="%1$s" id="%1$s" rows="3" class="large-text">%2$s</textarea>',
