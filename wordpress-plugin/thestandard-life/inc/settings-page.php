@@ -27,6 +27,17 @@ function tsl_home_sections() {
 				'tsl_issue_label' => array( __( '"In This Issue" label', 'thestandard-life' ), 'text', 'In this issue · No. 12' ),
 			),
 		),
+		'hero'     => array(
+			'title'  => __( 'Hero Cards (การ์ดเล็ก 6 ใบข้าง Cover Story)', 'thestandard-life' ),
+			'fields' => array(
+				'tsl_hero_post_1' => array( __( 'การ์ดที่ 1 (คอลัมน์ซ้าย)', 'thestandard-life' ), 'post_select', '' ),
+				'tsl_hero_post_2' => array( __( 'การ์ดที่ 2 (คอลัมน์ซ้าย)', 'thestandard-life' ), 'post_select', '' ),
+				'tsl_hero_post_3' => array( __( 'การ์ดที่ 3 (คอลัมน์ซ้าย)', 'thestandard-life' ), 'post_select', '' ),
+				'tsl_hero_post_4' => array( __( 'การ์ดที่ 4 (คอลัมน์ขวา)', 'thestandard-life' ), 'post_select', '' ),
+				'tsl_hero_post_5' => array( __( 'การ์ดที่ 5 (คอลัมน์ขวา)', 'thestandard-life' ), 'post_select', '' ),
+				'tsl_hero_post_6' => array( __( 'การ์ดที่ 6 (คอลัมน์ขวา)', 'thestandard-life' ), 'post_select', '' ),
+			),
+		),
 		'letter'   => array(
 			'title'  => __( "Editor's Letter", 'thestandard-life' ),
 			'fields' => array(
@@ -101,6 +112,17 @@ function tsl_opt( $key ) {
 }
 
 /**
+ * Sanitize a hero-card selection: a LIFE post ID, or '' for "auto".
+ *
+ * @param mixed $value Submitted value.
+ * @return string
+ */
+function tsl_sanitize_post_id( $value ) {
+	$id = absint( $value );
+	return ( $id && TSL_CPT === get_post_type( $id ) ) ? (string) $id : '';
+}
+
+/**
  * Register each option with the Settings API so options.php can save them.
  */
 function tsl_register_settings() {
@@ -112,6 +134,8 @@ function tsl_register_settings() {
 			$sanitize = 'sanitize_textarea_field';
 		} elseif ( 'url' === $type || 'image' === $type ) {
 			$sanitize = 'esc_url_raw';
+		} elseif ( 'post_select' === $type ) {
+			$sanitize = 'tsl_sanitize_post_id';
 		}
 
 		register_setting( 'tsl_home_settings_group', $key, array(
@@ -205,6 +229,30 @@ function tsl_render_field( $key, $field ) {
 	$value = tsl_opt( $key );
 
 	switch ( $type ) {
+		case 'post_select':
+			$posts = get_posts( array(
+				'post_type'      => TSL_CPT,
+				'posts_per_page' => 100,
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+			) );
+			printf( '<select name="%1$s" id="%1$s" style="max-width:100%%;">', esc_attr( $key ) );
+			printf(
+				'<option value=""%s>%s</option>',
+				selected( $value, '', false ),
+				esc_html__( '— ใช้บทความล่าสุดอัตโนมัติ —', 'thestandard-life' )
+			);
+			foreach ( $posts as $p ) {
+				printf(
+					'<option value="%1$d"%2$s>%3$s</option>',
+					(int) $p->ID,
+					selected( (int) $value, (int) $p->ID, false ),
+					esc_html( $p->post_title )
+				);
+			}
+			echo '</select>';
+			break;
+
 		case 'select':
 			$options = isset( $field[3] ) ? $field[3] : array();
 			printf( '<select name="%1$s" id="%1$s">', esc_attr( $key ) );

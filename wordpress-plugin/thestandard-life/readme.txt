@@ -24,7 +24,8 @@ WordPress ใช้ได้ทีละ 1 ธีมทั้งเว็บ ถ
 - Custom Post Type: LIFE Articles (slug: life_post)  → เมนู "THE STANDARD LIFE"
 - Taxonomy: LIFE Categories (slug: life_category)    → เมนูย่อย Categories
 - ใช้ Tag ปกติได้ (แท็ก "editors-pick" = ขึ้น Editor's Pick บนหน้า /life/)
-- แท็ก "hero-pick" = เลือกบทความขึ้นการ์ดเล็ก 6 ใบข้าง Cover Story เอง (ไม่ครบ 6 จะเติมด้วยบทความล่าสุดให้ครบ)
+- การ์ดเล็ก 6 ใบข้าง Cover Story = เลือกบทความเองได้ที่ THE STANDARD LIFE > Homepage Settings > Hero Cards
+  (ช่องไหนปล่อยเป็น "ใช้บทความล่าสุดอัตโนมัติ" ระบบจะเติมบทความล่าสุดให้เอง)
 
 โครงสร้าง URL:
   /life/                      → LIFE landing (hero + editor's pick + popular + หมวด)

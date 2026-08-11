@@ -26,28 +26,37 @@ if ( ! $cover_q->have_posts() && ! empty( $cover_args['post__in'] ) ) {
 $cover_post = $cover_q->have_posts() ? $cover_q->posts[0] : null;
 $cover_id   = $cover_post ? $cover_post->ID : 0;
 
-/* ---------- Hero side columns: manual picks via "hero-pick" tag, filled with latest ---------- */
-$hero_pick_q = new WP_Query( array(
-	'post_type'           => TSL_CPT,
-	'posts_per_page'      => 6,
-	'tag'                 => 'hero-pick',
-	'post__not_in'        => array( $cover_id ),
-	'ignore_sticky_posts' => true,
-	'no_found_rows'       => true,
-) );
-$feed_posts = $hero_pick_q->posts;
-$pick_ids   = wp_list_pluck( $feed_posts, 'ID' );
+/* ---------- Hero side columns: manual picks from Homepage Settings, gaps filled with latest ---------- */
+$hero_slots = array();
+$used_ids   = array( $cover_id );
+for ( $i = 1; $i <= 6; $i++ ) {
+	$picked = absint( tsl_opt( 'tsl_hero_post_' . $i ) );
+	if ( $picked && ! in_array( $picked, $used_ids, true ) && 'publish' === get_post_status( $picked ) ) {
+		$hero_slots[ $i ] = get_post( $picked );
+		$used_ids[]       = $picked;
+	} else {
+		$hero_slots[ $i ] = null;
+	}
+}
 
-if ( count( $feed_posts ) < 6 ) {
+$gaps = count( array_filter( $hero_slots, 'is_null' ) );
+if ( $gaps ) {
 	$fill_q = new WP_Query( array(
 		'post_type'           => TSL_CPT,
-		'posts_per_page'      => 6 - count( $feed_posts ),
-		'post__not_in'        => array_merge( array( $cover_id ), $pick_ids ),
+		'posts_per_page'      => $gaps,
+		'post__not_in'        => $used_ids,
 		'ignore_sticky_posts' => true,
 		'no_found_rows'       => true,
 	) );
-	$feed_posts = array_merge( $feed_posts, $fill_q->posts );
+	$fill = $fill_q->posts;
+	foreach ( $hero_slots as $i => $slot ) {
+		if ( null === $slot && $fill ) {
+			$hero_slots[ $i ] = array_shift( $fill );
+		}
+	}
 }
+
+$feed_posts = array_values( array_filter( $hero_slots ) );
 $hero_left  = array_slice( $feed_posts, 0, 3 );
 $hero_right = array_slice( $feed_posts, 3, 3 );
 ?>
