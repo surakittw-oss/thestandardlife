@@ -119,9 +119,11 @@
   .hero-side .small-card > div{display:flex; flex-direction:column;}
   .hero-side .small-card h5{font-family:var(--sans); font-weight:600; font-size:14px; line-height:1.55;}
   .hero-side hr{border:0; border-top:1px solid var(--line-soft); margin:0;}
-  /* Event poster: show the artwork in full (posters are often portrait), never cropped. */
+  /* Event poster: show the artwork in full (posters are often portrait), never
+     cropped, but kept to a thumbnail size so it stays a supporting visual. The
+     px cap keeps it small once the sidebar goes full-width on mobile. */
   .event-poster{margin:14px 0 0;}
-  .event-poster img{display:block; width:100%; height:auto; border-radius:var(--r); background:var(--cream);}
+  .event-poster img{display:block; width:100%; max-width:min(70%, 190px); height:auto; border-radius:var(--r); background:var(--cream);}
 
   .hero-main{display:flex; flex-direction:column; gap:26px;}
   .hero-main .cat{font-family:var(--mono); font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--muted);}
