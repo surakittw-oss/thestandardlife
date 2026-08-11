@@ -26,15 +26,28 @@ if ( ! $cover_q->have_posts() && ! empty( $cover_args['post__in'] ) ) {
 $cover_post = $cover_q->have_posts() ? $cover_q->posts[0] : null;
 $cover_id   = $cover_post ? $cover_post->ID : 0;
 
-/* ---------- Recent feed for hero side columns ---------- */
-$feed       = new WP_Query( array(
+/* ---------- Hero side columns: manual picks via "hero-pick" tag, filled with latest ---------- */
+$hero_pick_q = new WP_Query( array(
 	'post_type'           => TSL_CPT,
 	'posts_per_page'      => 6,
+	'tag'                 => 'hero-pick',
 	'post__not_in'        => array( $cover_id ),
 	'ignore_sticky_posts' => true,
 	'no_found_rows'       => true,
 ) );
-$feed_posts = $feed->posts;
+$feed_posts = $hero_pick_q->posts;
+$pick_ids   = wp_list_pluck( $feed_posts, 'ID' );
+
+if ( count( $feed_posts ) < 6 ) {
+	$fill_q = new WP_Query( array(
+		'post_type'           => TSL_CPT,
+		'posts_per_page'      => 6 - count( $feed_posts ),
+		'post__not_in'        => array_merge( array( $cover_id ), $pick_ids ),
+		'ignore_sticky_posts' => true,
+		'no_found_rows'       => true,
+	) );
+	$feed_posts = array_merge( $feed_posts, $fill_q->posts );
+}
 $hero_left  = array_slice( $feed_posts, 0, 3 );
 $hero_right = array_slice( $feed_posts, 3, 3 );
 ?>
