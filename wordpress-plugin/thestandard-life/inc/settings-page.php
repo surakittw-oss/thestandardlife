@@ -28,14 +28,11 @@ function tsl_home_sections() {
 			),
 		),
 		'hero'     => array(
-			'title'  => __( 'Hero Cards (การ์ดเล็ก 6 ใบข้าง Cover Story)', 'thestandard-life' ),
+			'title'  => __( 'Hero Cards (การ์ดเล็ก 3 ใบ ใต้ label Issue)', 'thestandard-life' ),
 			'fields' => array(
-				'tsl_hero_post_1' => array( __( 'การ์ดที่ 1 (คอลัมน์ซ้าย)', 'thestandard-life' ), 'post_select', '' ),
-				'tsl_hero_post_2' => array( __( 'การ์ดที่ 2 (คอลัมน์ซ้าย)', 'thestandard-life' ), 'post_select', '' ),
-				'tsl_hero_post_3' => array( __( 'การ์ดที่ 3 (คอลัมน์ซ้าย)', 'thestandard-life' ), 'post_select', '' ),
-				'tsl_hero_post_4' => array( __( 'การ์ดที่ 4 (คอลัมน์ขวา)', 'thestandard-life' ), 'post_select', '' ),
-				'tsl_hero_post_5' => array( __( 'การ์ดที่ 5 (คอลัมน์ขวา)', 'thestandard-life' ), 'post_select', '' ),
-				'tsl_hero_post_6' => array( __( 'การ์ดที่ 6 (คอลัมน์ขวา)', 'thestandard-life' ), 'post_select', '' ),
+				'tsl_hero_post_1' => array( __( 'การ์ดที่ 1', 'thestandard-life' ), 'post_select', '' ),
+				'tsl_hero_post_2' => array( __( 'การ์ดที่ 2', 'thestandard-life' ), 'post_select', '' ),
+				'tsl_hero_post_3' => array( __( 'การ์ดที่ 3', 'thestandard-life' ), 'post_select', '' ),
 			),
 		),
 		'letter'   => array(
@@ -72,6 +69,7 @@ function tsl_home_sections() {
 			'fields' => array(
 				'tsl_event_title' => array( __( 'Title', 'thestandard-life' ), 'text', 'Standard Life Market — Bangsaen' ),
 				'tsl_event_meta'  => array( __( 'Meta text', 'thestandard-life' ), 'text', '24–25 พฤษภาคม · ตลาด · ดนตรี · อาหารชุมชน' ),
+				'tsl_event_image' => array( __( 'Poster image (ไม่ใส่ก็ได้)', 'thestandard-life' ), 'image', '' ),
 				'tsl_event_link'  => array( __( 'Link URL', 'thestandard-life' ), 'url', '' ),
 			),
 		),

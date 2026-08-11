@@ -26,10 +26,10 @@ if ( ! $cover_q->have_posts() && ! empty( $cover_args['post__in'] ) ) {
 $cover_post = $cover_q->have_posts() ? $cover_q->posts[0] : null;
 $cover_id   = $cover_post ? $cover_post->ID : 0;
 
-/* ---------- Hero side columns: manual picks from Homepage Settings, gaps filled with latest ---------- */
+/* ---------- Hero side cards: manual picks from Homepage Settings, gaps filled with latest ---------- */
 $hero_slots = array();
 $used_ids   = array( $cover_id );
-for ( $i = 1; $i <= 6; $i++ ) {
+for ( $i = 1; $i <= 3; $i++ ) {
 	$picked = absint( tsl_opt( 'tsl_hero_post_' . $i ) );
 	if ( $picked && ! in_array( $picked, $used_ids, true ) && 'publish' === get_post_status( $picked ) ) {
 		$hero_slots[ $i ] = get_post( $picked );
@@ -56,9 +56,8 @@ if ( $gaps ) {
 	}
 }
 
-$feed_posts = array_values( array_filter( $hero_slots ) );
-$hero_left  = array_slice( $feed_posts, 0, 3 );
-$hero_right = array_slice( $feed_posts, 3, 3 );
+$hero_left = array_values( array_filter( $hero_slots ) );
+$shown_ids = array_merge( array( $cover_id ), wp_list_pluck( $hero_left, 'ID' ) );
 ?>
 
 <!-- HERO -->
@@ -153,6 +152,16 @@ $hero_right = array_slice( $feed_posts, 3, 3 );
 			<div>
 				<div class="kicker"><?php esc_html_e( 'Upcoming Event', 'thestandard-life' ); ?></div>
 				<?php $ev_link = tsl_opt( 'tsl_event_link' ); ?>
+				<?php $ev_img = tsl_opt( 'tsl_event_image' ); ?>
+				<?php if ( $ev_img ) : ?>
+					<figure class="event-poster">
+						<?php if ( $ev_link ) : ?>
+							<a href="<?php echo esc_url( $ev_link ); ?>"><img src="<?php echo esc_url( $ev_img ); ?>" alt=""></a>
+						<?php else : ?>
+							<img src="<?php echo esc_url( $ev_img ); ?>" alt="">
+						<?php endif; ?>
+					</figure>
+				<?php endif; ?>
 				<h5 style="font-family:var(--sans); font-size:16px; margin-top:12px; font-weight:600; line-height:1.5;">
 					<?php if ( $ev_link ) : ?>
 						<a href="<?php echo esc_url( $ev_link ); ?>" style="color:inherit;"><?php echo esc_html( $event_title ); ?></a>
@@ -169,8 +178,17 @@ $hero_right = array_slice( $feed_posts, 3, 3 );
 		<?php
 		// Fallback: if the editor cleared every curated block, show recent posts.
 		if ( ! $has_editorial ) {
-			echo '<div class="kicker">' . esc_html__( 'More from LIFE', 'thestandard-life' ) . '</div>';
-			tsl_render_cards( $hero_right, 'card-small', true );
+			$more_q = new WP_Query( array(
+				'post_type'           => TSL_CPT,
+				'posts_per_page'      => 3,
+				'post__not_in'        => $shown_ids,
+				'ignore_sticky_posts' => true,
+				'no_found_rows'       => true,
+			) );
+			if ( $more_q->posts ) {
+				echo '<div class="kicker">' . esc_html__( 'More from LIFE', 'thestandard-life' ) . '</div>';
+				tsl_render_cards( $more_q->posts, 'card-small', true );
+			}
 		}
 		?>
 	</aside>
