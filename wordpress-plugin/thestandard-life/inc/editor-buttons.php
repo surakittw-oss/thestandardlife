@@ -37,14 +37,22 @@ function tsl_editor_buttons( $editor_id ) {
 	if ( 'content' !== $editor_id || ! tsl_is_life_edit_screen() ) {
 		return;
 	}
+	// inline-flex keeps the icon centred on the same line as the label; the
+	// dashicon's own 20px line-height otherwise drops it below the baseline.
 	?>
-	<button type="button" class="button tsl-insert-event">
-		<span class="dashicons dashicons-plus-alt2" style="vertical-align:text-top;"></span>
-		<?php esc_html_e( 'แทรกบล็อกกิจกรรม', 'thestandard-life' ); ?>
+	<style>
+		/* Specificity has to clear core's ".wp-media-buttons .button", which
+		   otherwise forces display:inline-block and defeats the flex centring. */
+		.wp-media-buttons .button.tsl-editor-btn{display:inline-flex; align-items:center; gap:4px; vertical-align:top;}
+		.wp-media-buttons .button.tsl-editor-btn .dashicons{font-size:18px; width:18px; height:18px; line-height:1; vertical-align:middle;}
+	</style>
+	<button type="button" class="button tsl-editor-btn tsl-insert-event">
+		<span class="dashicons dashicons-plus-alt2"></span>
+		<?php esc_html_e( 'Insert Event Block', 'thestandard-life' ); ?>
 	</button>
-	<button type="button" class="button tsl-insert-event-bulk">
-		<span class="dashicons dashicons-images-alt2" style="vertical-align:text-top;"></span>
-		<?php esc_html_e( 'แทรกหลายกิจกรรมจากรูป', 'thestandard-life' ); ?>
+	<button type="button" class="button tsl-editor-btn tsl-insert-event-bulk">
+		<span class="dashicons dashicons-images-alt2"></span>
+		<?php esc_html_e( 'Insert Events from Images', 'thestandard-life' ); ?>
 	</button>
 	<?php
 }
@@ -80,8 +88,8 @@ function tsl_editor_buttons_js() {
 		'when'    => __( 'When:', 'thestandard-life' ),
 		'where'   => __( 'Where:', 'thestandard-life' ),
 		'info'    => __( 'More Info:', 'thestandard-life' ),
-		'frame'   => __( 'เลือกรูปกิจกรรม (เลือกได้หลายรูปพร้อมกัน)', 'thestandard-life' ),
-		'useThem' => __( 'ใช้รูปเหล่านี้', 'thestandard-life' ),
+		'frame'   => __( 'Select event images (you can pick several at once)', 'thestandard-life' ),
+		'useThem' => __( 'Use these images', 'thestandard-life' ),
 	) );
 
 	return <<<JS
