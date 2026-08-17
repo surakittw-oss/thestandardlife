@@ -156,7 +156,7 @@ $shown_ids = array_merge( array( $cover_id ), wp_list_pluck( $hero_left, 'ID' ) 
 				<?php if ( $ev_img ) : ?>
 					<figure class="event-poster">
 						<?php if ( $ev_link ) : ?>
-							<a href="<?php echo esc_url( $ev_link ); ?>"><img src="<?php echo esc_url( $ev_img ); ?>" alt=""></a>
+							<a href="<?php echo esc_url( $ev_link ); ?>" target="_blank" rel="noopener"><img src="<?php echo esc_url( $ev_img ); ?>" alt=""></a>
 						<?php else : ?>
 							<img src="<?php echo esc_url( $ev_img ); ?>" alt="">
 						<?php endif; ?>
@@ -164,7 +164,7 @@ $shown_ids = array_merge( array( $cover_id ), wp_list_pluck( $hero_left, 'ID' ) 
 				<?php endif; ?>
 				<h5 style="font-family:var(--sans); font-size:16px; margin-top:12px; font-weight:600; line-height:1.5;">
 					<?php if ( $ev_link ) : ?>
-						<a href="<?php echo esc_url( $ev_link ); ?>" style="color:inherit;"><?php echo esc_html( $event_title ); ?></a>
+						<a href="<?php echo esc_url( $ev_link ); ?>" style="color:inherit;" target="_blank" rel="noopener"><?php echo esc_html( $event_title ); ?></a>
 					<?php else : ?>
 						<?php echo esc_html( $event_title ); ?>
 					<?php endif; ?>
