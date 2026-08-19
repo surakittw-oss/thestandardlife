@@ -88,7 +88,10 @@ function tsl_editor_buttons_assets() {
 		'insert'       => __( 'Insert', 'thestandard-life' ),
 		'insertN'      => __( 'Insert %d events', 'thestandard-life' ),
 		'cancel'       => __( 'Cancel', 'thestandard-life' ),
-		'pickPhotos'   => __( 'Pick photos next, in this order', 'thestandard-life' ),
+		'fillPhotos'   => __( 'Add photos in order', 'thestandard-life' ),
+		'addPhoto'     => __( 'Add photo', 'thestandard-life' ),
+		'photoFor'     => __( 'Photo for', 'thestandard-life' ),
+		'usePhoto'     => __( 'Use this photo', 'thestandard-life' ),
 		'photoFrame'   => __( 'Pick photos in event order', 'thestandard-life' ),
 		'usePhotos'    => __( 'Use these photos', 'thestandard-life' ),
 		'nothingYet'   => __( 'Nothing is inserted until you confirm.', 'thestandard-life' ),
@@ -115,10 +118,15 @@ function tsl_paste_dialog_css() {
 	.tsl-paste-preview{border:1px solid #dcdcde; border-radius:4px; padding:12px; background:#f6f7f7; min-height:180px; max-height:340px; overflow:auto;}
 	.tsl-paste-empty{color:#646970; margin:0; font-size:13px;}
 	.tsl-paste-count{margin:0 0 10px; font-weight:600; color:#2271b1;}
-	.tsl-paste-item{border-top:1px solid #dcdcde; padding-top:8px; margin-top:8px; font-size:13px;}
+	.tsl-paste-item{display:flex; gap:10px; align-items:flex-start; border-top:1px solid #dcdcde; padding-top:10px; margin-top:10px; font-size:13px;}
 	.tsl-paste-item:first-of-type{border-top:0; padding-top:0; margin-top:0;}
-	.tsl-paste-item span{display:block; color:#646970; font-size:12px; margin-top:2px;}
-	.tsl-paste-photos{display:block; margin-top:12px; font-size:12px; color:#646970;}
+	.tsl-paste-item-text{min-width:0;}
+	.tsl-paste-item-text span{display:block; color:#646970; font-size:12px; margin-top:2px;}
+	.tsl-paste-pic{flex:none; width:54px; height:54px; padding:0; cursor:pointer; background:#fff; border:1px dashed #c3c4c7; border-radius:4px; overflow:hidden; display:flex; align-items:center; justify-content:center;}
+	.tsl-paste-pic:hover{border-color:#2271b1;}
+	.tsl-paste-pic img{width:100%; height:100%; object-fit:cover; display:block;}
+	.tsl-paste-pic-empty{font-size:10px; line-height:1.3; color:#646970; padding:2px;}
+	.tsl-paste-fill{margin-top:12px;}
 	.tsl-paste-foot{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 18px; border-top:1px solid #dcdcde; background:#f6f7f7;}
 	.tsl-paste-note{font-size:12px; color:#646970;}
 	@media (max-width:782px){ .tsl-paste-body{grid-template-columns:1fr;} }

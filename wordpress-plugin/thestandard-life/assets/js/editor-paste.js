@@ -179,7 +179,7 @@
 						'<textarea id="tsl-paste-src" rows="16" spellcheck="false"></textarea></div>' +
 					'<div><span class="tsl-paste-label">' + esc( T.detected || 'Detected' ) + '</span>' +
 						'<div class="tsl-paste-preview"><p class="tsl-paste-empty">' + esc( T.awaiting || 'Paste text to see what will be added.' ) + '</p></div>' +
-						'<label class="tsl-paste-photos"><input type="checkbox" checked> ' + esc( T.pickPhotos || 'Pick photos next, in this order' ) + '</label>' +
+						'<button type="button" class="button tsl-paste-fill" disabled>' + esc( T.fillPhotos || 'Add photos in order' ) + '</button>' +
 					'</div>' +
 				'</div>' +
 				'<div class="tsl-paste-foot"><span class="tsl-paste-note">' + esc( T.nothingYet || 'Nothing is inserted until you confirm.' ) + '</span>' +
@@ -192,45 +192,70 @@
 		var $src = $o.find( '#tsl-paste-src' );
 		var $preview = $o.find( '.tsl-paste-preview' );
 		var $go = $o.find( '.tsl-paste-go' );
+		var $fill = $o.find( '.tsl-paste-fill' );
 		var events = [];
+		// Chosen photo per event, kept by position so re-parsing while typing
+		// does not throw away pictures already picked.
+		var photos = [];
 
 		function close() { $o.remove(); $( document ).off( 'keydown.tslPaste' ); }
+
+		function thumbFor( i ) {
+			var att = photos[ i ];
+			if ( ! att ) {
+				return '<span class="tsl-paste-pic-empty">+ ' + esc( T.addPhoto || 'Add photo' ) + '</span>';
+			}
+			var sizes = att.sizes || {};
+			var src = ( sizes.thumbnail || sizes.medium || {} ).url || att.url;
+			return '<img src="' + esc( src ) + '" alt="">';
+		}
 
 		function refresh() {
 			events = parse( $src.val() );
 			if ( ! events.length ) {
 				$preview.html( '<p class="tsl-paste-empty">' + esc( T.awaiting || 'Paste text to see what will be added.' ) + '</p>' );
 				$go.prop( 'disabled', true ).text( T.insert || 'Insert' );
+				$fill.prop( 'disabled', true );
 				return;
 			}
 			var html = '<p class="tsl-paste-count">' + esc(
 				( T.foundN || '%d events found' ).replace( '%d', events.length )
 			) + '</p>';
 			events.forEach( function ( ev, i ) {
-				html += '<div class="tsl-paste-item"><strong>' + ( i + 1 ) + '. ' + esc( ev.title ) + '</strong>' +
-					'<span>' + esc( fieldSummary( ev ) ) + '</span></div>';
+				html += '<div class="tsl-paste-item">' +
+					'<button type="button" class="tsl-paste-pic" data-i="' + i + '" title="' + esc( ev.title ) + '">' +
+						thumbFor( i ) + '</button>' +
+					'<div class="tsl-paste-item-text"><strong>' + ( i + 1 ) + '. ' + esc( ev.title ) + '</strong>' +
+					'<span>' + esc( fieldSummary( ev ) ) + '</span></div></div>';
 			} );
 			$preview.html( html );
 			$go.prop( 'disabled', false ).text(
 				( T.insertN || 'Insert %d events' ).replace( '%d', events.length )
 			);
+			$fill.prop( 'disabled', false );
 		}
 
-		$src.on( 'input paste', function () { setTimeout( refresh, 0 ); } );
-		$o.on( 'click', '.tsl-paste-cancel, .tsl-paste-x', close );
-		$o.on( 'click', function ( e ) { if ( e.target === overlay ) { close(); } } );
-		$( document ).on( 'keydown.tslPaste', function ( e ) { if ( 27 === e.keyCode ) { close(); } } );
+		// One photo for one event — the event's name is in the frame title so it
+		// is clear which one is being illustrated.
+		$o.on( 'click', '.tsl-paste-pic', function () {
+			var i = parseInt( $( this ).data( 'i' ), 10 );
+			var frame = wp.media( {
+				title: ( T.photoFor || 'Photo for' ) + ': ' + ( events[ i ] ? events[ i ].title : '' ),
+				button: { text: ( T.usePhoto || 'Use this photo' ) },
+				library: { type: 'image' },
+				multiple: false
+			} );
+			frame.on( 'select', function () {
+				photos[ i ] = frame.state().get( 'selection' ).first().toJSON();
+				refresh();
+			} );
+			frame.open();
+		} );
 
-		$o.on( 'click', '.tsl-paste-go', function () {
+		// Bulk fill: pick several at once and drop them into the events that do
+		// not have a picture yet, in the order they were chosen.
+		$fill.on( 'click', function () {
 			if ( ! events.length ) { return; }
-			var wantPhotos = $o.find( '.tsl-paste-photos input' ).is( ':checked' );
-
-			if ( ! wantPhotos ) {
-				insertHtml( events.map( function ( ev ) { return renderEvent( ev, null ); } ).join( '\n' ) );
-				close();
-				return;
-			}
-
 			var frame = wp.media( {
 				title: ( T.photoFrame || 'Pick photos in event order' ),
 				button: { text: ( T.usePhotos || 'Use these photos' ) },
@@ -239,17 +264,26 @@
 			} );
 			frame.on( 'select', function () {
 				var picked = frame.state().get( 'selection' ).map( function ( m ) { return m.toJSON(); } );
-				insertHtml( events.map( function ( ev, i ) {
-					return renderEvent( ev, picked[ i ] || null );
-				} ).join( '\n' ) );
-				close();
-			} );
-			// Closing the picker without choosing still inserts the text.
-			frame.on( 'escape', function () {
-				insertHtml( events.map( function ( ev ) { return renderEvent( ev, null ); } ).join( '\n' ) );
-				close();
+				var p = 0;
+				for ( var i = 0; i < events.length && p < picked.length; i++ ) {
+					if ( ! photos[ i ] ) { photos[ i ] = picked[ p ]; p++; }
+				}
+				refresh();
 			} );
 			frame.open();
+		} );
+
+		$src.on( 'input paste', function () { setTimeout( refresh, 0 ); } );
+		$o.on( 'click', '.tsl-paste-cancel, .tsl-paste-x', close );
+		$o.on( 'click', function ( e ) { if ( e.target === overlay ) { close(); } } );
+		$( document ).on( 'keydown.tslPaste', function ( e ) { if ( 27 === e.keyCode ) { close(); } } );
+
+		$o.on( 'click', '.tsl-paste-go', function () {
+			if ( ! events.length ) { return; }
+			insertHtml( events.map( function ( ev, i ) {
+				return renderEvent( ev, photos[ i ] || null );
+			} ).join( '\n' ) );
+			close();
 		} );
 
 		$src.trigger( 'focus' );
