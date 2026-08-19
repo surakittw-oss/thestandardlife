@@ -54,6 +54,10 @@ function tsl_editor_buttons( $editor_id ) {
 		<span class="dashicons dashicons-images-alt2"></span>
 		<?php esc_html_e( 'Insert Events from Images', 'thestandard-life' ); ?>
 	</button>
+	<button type="button" class="button tsl-editor-btn tsl-paste-events">
+		<span class="dashicons dashicons-clipboard"></span>
+		<?php esc_html_e( 'Paste Events from Doc', 'thestandard-life' ); ?>
+	</button>
 	<?php
 }
 add_action( 'media_buttons', 'tsl_editor_buttons', 20 );
@@ -67,6 +71,58 @@ function tsl_editor_buttons_assets() {
 	}
 	wp_enqueue_media();
 	wp_add_inline_script( 'media-editor', tsl_editor_buttons_js() );
+
+	wp_enqueue_script(
+		'tsl-editor-paste',
+		TSL_URL . 'assets/js/editor-paste.js',
+		array( 'jquery', 'media-editor' ),
+		TSL_VERSION,
+		true
+	);
+	wp_localize_script( 'tsl-editor-paste', 'TSL_PASTE', array(
+		'title'        => __( 'Paste events from your document', 'thestandard-life' ),
+		'pasteHere'    => __( 'Paste everything at once', 'thestandard-life' ),
+		'detected'     => __( 'Detected', 'thestandard-life' ),
+		'awaiting'     => __( 'Paste text to see what will be added.', 'thestandard-life' ),
+		'foundN'       => __( '%d events found', 'thestandard-life' ),
+		'insert'       => __( 'Insert', 'thestandard-life' ),
+		'insertN'      => __( 'Insert %d events', 'thestandard-life' ),
+		'cancel'       => __( 'Cancel', 'thestandard-life' ),
+		'pickPhotos'   => __( 'Pick photos next, in this order', 'thestandard-life' ),
+		'photoFrame'   => __( 'Pick photos in event order', 'thestandard-life' ),
+		'usePhotos'    => __( 'Use these photos', 'thestandard-life' ),
+		'nothingYet'   => __( 'Nothing is inserted until you confirm.', 'thestandard-life' ),
+		'bodyLabel'    => __( 'description', 'thestandard-life' ),
+		'nothingFound' => __( 'title only', 'thestandard-life' ),
+	) );
+	wp_add_inline_style( 'wp-admin', tsl_paste_dialog_css() );
+}
+
+/**
+ * Styles for the paste dialog. Kept inline because it is a single admin screen.
+ *
+ * @return string
+ */
+function tsl_paste_dialog_css() {
+	return '
+	.tsl-paste-overlay{position:fixed; inset:0; z-index:160000; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; padding:24px;}
+	.tsl-paste-modal{background:#fff; border-radius:4px; width:100%; max-width:900px; max-height:90vh; display:flex; flex-direction:column;}
+	.tsl-paste-head{display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #dcdcde; font-size:15px;}
+	.tsl-paste-x{font-size:22px; line-height:1; text-decoration:none; color:#646970; cursor:pointer;}
+	.tsl-paste-body{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:18px; padding:18px; overflow:auto;}
+	.tsl-paste-label{display:block; font-size:12px; color:#646970; margin-bottom:6px;}
+	.tsl-paste-body textarea{width:100%; font-family:Menlo,Consolas,monospace; font-size:12px; line-height:1.7;}
+	.tsl-paste-preview{border:1px solid #dcdcde; border-radius:4px; padding:12px; background:#f6f7f7; min-height:180px; max-height:340px; overflow:auto;}
+	.tsl-paste-empty{color:#646970; margin:0; font-size:13px;}
+	.tsl-paste-count{margin:0 0 10px; font-weight:600; color:#2271b1;}
+	.tsl-paste-item{border-top:1px solid #dcdcde; padding-top:8px; margin-top:8px; font-size:13px;}
+	.tsl-paste-item:first-of-type{border-top:0; padding-top:0; margin-top:0;}
+	.tsl-paste-item span{display:block; color:#646970; font-size:12px; margin-top:2px;}
+	.tsl-paste-photos{display:block; margin-top:12px; font-size:12px; color:#646970;}
+	.tsl-paste-foot{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 18px; border-top:1px solid #dcdcde; background:#f6f7f7;}
+	.tsl-paste-note{font-size:12px; color:#646970;}
+	@media (max-width:782px){ .tsl-paste-body{grid-template-columns:1fr;} }
+	';
 }
 add_action( 'admin_enqueue_scripts', 'tsl_editor_buttons_assets' );
 

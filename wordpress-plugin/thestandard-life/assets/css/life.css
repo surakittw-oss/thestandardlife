@@ -543,7 +543,17 @@
   .prose hr{border:0; border-top:1px solid var(--line-soft); margin:44px 0 0;}
   .prose blockquote{margin:48px 0; padding:8px 0 8px 28px; border-left:3px solid var(--ink); font-family:var(--sans); font-weight:500; font-size:26px; line-height:1.45; letter-spacing:-.01em; color:var(--ink);}
   .prose blockquote cite{display:block; margin-top:14px; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; font-style:normal; color:var(--muted);}
-  .prose ul.dishes{list-style:none; display:flex; flex-direction:column; gap:0;}
+  /* Plain lists in article copy — a round-up's screening times, line-ups and
+     so on. The global reset zeroes list padding, which would leave the markers
+     clipped against the column edge, so the indent is restored here. */
+  .prose ul,
+  .prose ol{padding-left:1.5em; color:var(--body); font-family:'Sarabun', var(--sans);}
+  .prose ul{list-style:disc;}
+  .prose ol{list-style:decimal;}
+  .prose li{margin-top:6px; line-height:1.75;}
+  .prose li::marker{color:var(--muted);}
+
+  .prose ul.dishes{list-style:none; padding-left:0; display:flex; flex-direction:column; gap:0;}
   .prose ul.dishes li{display:flex; gap:16px; padding:18px 0; border-top:1px solid var(--line); align-items:baseline;}
   .prose ul.dishes li:last-child{border-bottom:1px solid var(--line);}
   .prose ul.dishes .name{font-weight:600; color:var(--ink); flex:1;}
