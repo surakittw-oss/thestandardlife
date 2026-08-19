@@ -45,7 +45,7 @@ function tsl_register_cpt() {
 		'public'       => true,
 		'has_archive'  => true, // /life/ becomes the LIFE landing page.
 		'show_in_rest' => true,
-		'menu_icon'    => 'dashicons-book-alt',
+		'menu_icon'    => 'dashicons-heart',
 		'menu_position'=> 5,
 		'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'author', 'revisions', 'custom-fields' ),
 		'rewrite'      => array( 'slug' => 'life', 'with_front' => false ),
