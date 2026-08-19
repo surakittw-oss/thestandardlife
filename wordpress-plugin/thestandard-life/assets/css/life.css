@@ -539,7 +539,7 @@
   /* Round-up posts: the Time/When/Where/More Info lines that follow each
      event, and the rule that separates one event from the next. */
   .prose .event-meta{margin-top:18px; padding-left:16px; border-left:3px solid var(--line-strong); line-height:2;}
-  .prose .event-meta strong{display:inline-block; min-width:5.5em; font-family:var(--sans); font-weight:600;}
+  .prose .event-meta strong{display:inline-block; min-width:7.5em; font-family:var(--sans); font-weight:600;}
   .prose hr{border:0; border-top:1px solid var(--line-soft); margin:44px 0 0;}
   .prose blockquote{margin:48px 0; padding:8px 0 8px 28px; border-left:3px solid var(--ink); font-family:var(--sans); font-weight:500; font-size:26px; line-height:1.45; letter-spacing:-.01em; color:var(--ink);}
   .prose blockquote cite{display:block; margin-top:14px; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; font-style:normal; color:var(--muted);}

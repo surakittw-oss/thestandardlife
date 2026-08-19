@@ -135,3 +135,59 @@ function tsl_render_cards( $items, $slug, $with_hr = false ) {
 	}
 	wp_reset_postdata();
 }
+
+/**
+ * Turn bare URLs inside an event block's meta lines into links.
+ *
+ * Round-up posts carry a "Booking:" and "More Info:" line per event, and
+ * making a dozen of those clickable by hand is the sort of step that gets
+ * skipped. Only the .event-meta paragraphs are touched, so nothing else in
+ * the article changes.
+ *
+ * make_clickable() does the matching — it already leaves existing anchors and
+ * tag attributes alone, which a hand-rolled URL regex tends to get wrong.
+ * Social handles (@somewhere) are deliberately left as plain text: there is no
+ * way to tell an Instagram handle from a Facebook one, and guessing would send
+ * readers to the wrong place.
+ *
+ * @param string $content Post content.
+ * @return string
+ */
+function tsl_linkify_event_meta( $content ) {
+	if ( ! tsl_current_view() || false === strpos( $content, 'event-meta' ) ) {
+		return $content;
+	}
+
+	return preg_replace_callback(
+		'#(<p[^>]*class="[^"]*\bevent-meta\b[^"]*"[^>]*>)(.*?)(</p>)#is',
+		function ( $m ) {
+			$inner = make_clickable( $m[2] );
+
+			// Give each link a target, and merge "noopener" into whatever rel is
+			// already there — make_clickable sets rel="nofollow" itself, so adding
+			// a second rel attribute would be invalid and silently drop one of them.
+			$inner = preg_replace_callback(
+				'#<a\b([^>]*)>#i',
+				function ( $a ) {
+					$attrs = $a[1];
+					if ( ! preg_match( '#\btarget\s*=#i', $attrs ) ) {
+						$attrs .= ' target="_blank"';
+					}
+					if ( preg_match( '#\brel\s*=\s*"([^"]*)"#i', $attrs, $rel ) ) {
+						if ( ! preg_match( '#\bnoopener\b#i', $rel[1] ) ) {
+							$attrs = str_ireplace( $rel[0], 'rel="' . $rel[1] . ' noopener"', $attrs );
+						}
+					} else {
+						$attrs .= ' rel="noopener"';
+					}
+					return '<a' . $attrs . '>';
+				},
+				$inner
+			);
+
+			return $m[1] . $inner . $m[3];
+		},
+		$content
+	);
+}
+add_filter( 'the_content', 'tsl_linkify_event_meta', 20 );

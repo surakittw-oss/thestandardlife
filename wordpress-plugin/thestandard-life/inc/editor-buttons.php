@@ -84,10 +84,12 @@ function tsl_editor_buttons_js() {
 	$labels = wp_json_encode( array(
 		'name'    => __( 'ชื่องาน', 'thestandard-life' ),
 		'blurb'   => __( 'คำอธิบายงาน…', 'thestandard-life' ),
-		'time'    => __( 'Time:', 'thestandard-life' ),
-		'when'    => __( 'When:', 'thestandard-life' ),
-		'where'   => __( 'Where:', 'thestandard-life' ),
-		'info'    => __( 'More Info:', 'thestandard-life' ),
+		'time'      => __( 'Time:', 'thestandard-life' ),
+		'when'      => __( 'When:', 'thestandard-life' ),
+		'where'     => __( 'Where:', 'thestandard-life' ),
+		'admission' => __( 'Admission:', 'thestandard-life' ),
+		'booking'   => __( 'Booking:', 'thestandard-life' ),
+		'info'      => __( 'More Info:', 'thestandard-life' ),
 		'frame'   => __( 'Select event images (you can pick several at once)', 'thestandard-life' ),
 		'useThem' => __( 'Use these images', 'thestandard-life' ),
 	) );
@@ -117,6 +119,8 @@ function tsl_editor_buttons_js() {
 			'<strong>' + L.time + '</strong> <br />' +
 			'<strong>' + L.when + '</strong> <br />' +
 			'<strong>' + L.where + '</strong> <br />' +
+			'<strong>' + L.admission + '</strong> <br />' +
+			'<strong>' + L.booking + '</strong> <br />' +
 			'<strong>' + L.info + '</strong> ' +
 			'</p>\\n<hr />\\n';
 	}
