@@ -26,6 +26,7 @@ require_once TSL_DIR . 'inc/helpers.php';
 require_once TSL_DIR . 'inc/template-loader.php';
 require_once TSL_DIR . 'inc/settings-page.php';
 require_once TSL_DIR . 'inc/editor-buttons.php';
+require_once TSL_DIR . 'inc/admin-icon.php';
 
 /**
  * Register the LIFE custom post type + its own taxonomy.
@@ -45,7 +46,7 @@ function tsl_register_cpt() {
 		'public'       => true,
 		'has_archive'  => true, // /life/ becomes the LIFE landing page.
 		'show_in_rest' => true,
-		'menu_icon'    => 'dashicons-heart',
+		'menu_icon'    => tsl_dumbbell_data_uri(),
 		'menu_position'=> 5,
 		'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'author', 'revisions', 'custom-fields' ),
 		'rewrite'      => array( 'slug' => 'life', 'with_front' => false ),
