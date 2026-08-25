@@ -46,6 +46,10 @@ function tsl_editor_buttons( $editor_id ) {
 		<span class="dashicons dashicons-clipboard"></span>
 		<?php esc_html_e( 'Paste Events from Doc', 'thestandard-life' ); ?>
 	</button>
+	<button type="button" class="button tsl-editor-btn tsl-insert-album">
+		<span class="dashicons dashicons-format-gallery"></span>
+		<?php esc_html_e( 'Insert Photo Album', 'thestandard-life' ); ?>
+	</button>
 	<?php
 }
 add_action( 'media_buttons', 'tsl_editor_buttons', 20 );
@@ -85,6 +89,13 @@ function tsl_editor_buttons_assets() {
 		'bodyLabel'    => __( 'description', 'thestandard-life' ),
 		'nothingFound' => __( 'title only', 'thestandard-life' ),
 	) );
+	wp_enqueue_script(
+		'tsl-editor-gallery',
+		TSL_URL . 'assets/js/editor-gallery.js',
+		array( 'jquery', 'media-editor', 'media-views' ),
+		TSL_VERSION,
+		true
+	);
 	wp_add_inline_style( 'wp-admin', tsl_paste_dialog_css() );
 }
 
