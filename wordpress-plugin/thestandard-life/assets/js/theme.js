@@ -105,5 +105,60 @@
         headings.forEach(function (h) { obs.observe(h); });
       }
     })();
+
+    // Photo albums (Classic Editor galleries)
+    (function () {
+      document.querySelectorAll('.tsl-album').forEach(function (album) {
+        var slides = album.querySelectorAll('.tsl-album-slide');
+        var thumbs = album.querySelectorAll('.tsl-album-thumb');
+        var counter = album.querySelector('.tsl-album-current');
+        if (slides.length < 2) return;
+        var at = 0;
+
+        function show(next) {
+          at = (next + slides.length) % slides.length;
+          slides.forEach(function (s, i) {
+            var on = i === at;
+            s.classList.toggle('is-active', on);
+            if (on) { s.removeAttribute('aria-hidden'); } else { s.setAttribute('aria-hidden', 'true'); }
+          });
+          thumbs.forEach(function (t, i) {
+            var on = i === at;
+            t.classList.toggle('is-active', on);
+            if (on) { t.setAttribute('aria-current', 'true'); } else { t.removeAttribute('aria-current'); }
+          });
+          if (counter) counter.textContent = at + 1;
+          // Keep the active thumbnail in view when the strip scrolls.
+          var thumb = thumbs[at];
+          if (thumb && thumb.parentElement) {
+            thumb.parentElement.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+          }
+        }
+
+        album.querySelector('.tsl-album-prev').addEventListener('click', function () { show(at - 1); });
+        album.querySelector('.tsl-album-next').addEventListener('click', function () { show(at + 1); });
+        thumbs.forEach(function (t) {
+          t.addEventListener('click', function () { show(parseInt(t.dataset.index, 10) || 0); });
+        });
+
+        // Arrow keys, once the album has focus.
+        album.setAttribute('tabindex', '0');
+        album.addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowLeft') { e.preventDefault(); show(at - 1); }
+          if (e.key === 'ArrowRight') { e.preventDefault(); show(at + 1); }
+        });
+
+        // Swipe, for phones.
+        var x0 = null;
+        var stage = album.querySelector('.tsl-album-stage');
+        stage.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+        stage.addEventListener('touchend', function (e) {
+          if (x0 === null) return;
+          var dx = e.changedTouches[0].clientX - x0;
+          if (Math.abs(dx) > 40) show(dx < 0 ? at + 1 : at - 1);
+          x0 = null;
+        }, { passive: true });
+      });
+    })();
   });
 })();
