@@ -70,7 +70,14 @@
       var prose = document.querySelector('.prose');
       if (!toc || !prose) return;
       var headings = prose.querySelectorAll('h2');
-      if (!headings.length) { toc.style.display = 'none'; return; }
+      if (!headings.length) {
+        // Hiding the sidebar takes it out of the grid, which would otherwise
+        // leave the article auto-placed into the narrow first column.
+        toc.style.display = 'none';
+        var wrap = toc.closest('.art-wrap');
+        if (wrap) wrap.classList.add('no-toc');
+        return;
+      }
       var ol = toc.querySelector('ol');
       if (!ol) return;
       ol.innerHTML = '';

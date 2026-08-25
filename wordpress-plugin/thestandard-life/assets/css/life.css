@@ -502,6 +502,9 @@
   .art-wrap{max-width:1180px; margin:0 auto; padding:64px 48px 96px; display:grid; grid-template-columns:220px minmax(0,1fr); gap:64px; align-items:flex-start;}
 
   /* sticky TOC */
+  /* An article with no H2s has no contents list; give its column back to the
+     copy rather than leaving a 220px gutter. */
+  .art-wrap.no-toc{grid-template-columns:minmax(0,1fr);}
   .toc{position:sticky; top:96px;}
   .toc h6{font-family:var(--mono); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--line);}
   .toc ol{list-style:none; counter-reset:toc; display:flex; flex-direction:column; gap:12px;}
@@ -540,6 +543,13 @@
      thumbnail strip. The stage keeps a fixed ratio so switching photos never
      shifts the page, and images sit inside it uncropped, which matters when a
      set mixes portrait and landscape shots. */
+  /* The album is built from <ul>s, so the article list styling above would
+     give it bullets and an indent. Two classes deep to outrank ".prose ul". */
+  .prose .tsl-album-slides,
+  .prose .tsl-album-thumbs{list-style:none; padding-left:0; margin-left:0;}
+  .prose .tsl-album-slides li,
+  .prose .tsl-album-thumbs li{margin-top:0;}
+
   .tsl-album{margin:44px 0;}
   .tsl-album-stage{position:relative; background:var(--cream); border-radius:var(--r); overflow:hidden;}
   .tsl-album-slides{list-style:none; padding:0; margin:0; aspect-ratio:16/10;}
