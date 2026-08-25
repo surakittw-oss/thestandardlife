@@ -546,7 +546,10 @@
   /* The album is built from <ul>s, so the article list styling above would
      give it bullets and an indent. Two classes deep to outrank ".prose ul". */
   .prose .tsl-album-slides,
-  .prose .tsl-album-thumbs{list-style:none; padding-left:0; margin-left:0;}
+  .prose .tsl-album-thumbs{list-style:none; padding-left:0;}
+  .prose .tsl-album-slides{margin-left:0;}
+  /* The strip is centred by auto margins below; do not pin it left here. */
+  .prose .tsl-album-thumbs{margin-left:auto; margin-right:auto;}
   .prose .tsl-album-slides li,
   .prose .tsl-album-thumbs li{margin-top:0;}
 
@@ -571,8 +574,12 @@
   .tsl-album-next{right:14px;}
   .tsl-album-count{position:absolute; top:14px; right:14px; padding:5px 11px; border-radius:999px;
     background:rgba(0,0,0,.62); color:#fff; font-family:var(--mono); font-size:11px; letter-spacing:.08em;}
-  .tsl-album-thumbs{list-style:none; padding:0; margin:12px 0 0; display:flex; gap:10px;
-    overflow-x:auto; scrollbar-width:none;}
+  /* Centre the strip under the stage. Sizing it to its contents and centring
+     with auto margins, rather than justify-content:center, keeps a long strip
+     scrollable from its first thumbnail — centred flex content that overflows
+     puts its start out of reach. */
+  .tsl-album-thumbs{list-style:none; padding:0; margin:12px auto 0; display:flex; gap:10px;
+    width:fit-content; max-width:100%; overflow-x:auto; scrollbar-width:none;}
   .tsl-album-thumbs::-webkit-scrollbar{display:none;}
   /* Without flex:none the row squeezes the thumbnails to fit rather than
      letting the strip scroll, which is what a long album needs. */
