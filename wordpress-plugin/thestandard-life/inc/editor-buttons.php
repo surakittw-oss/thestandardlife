@@ -1,12 +1,8 @@
 <?php
 /**
- * "Insert event block" buttons for the Classic Editor, for the weekly
- * round-up format (LIFE This Week) where the same block — heading, photo,
- * blurb, Time/When/Where/More Info — repeats a dozen-plus times per post.
- *
- * Typing that skeleton by hand is slow, and inserting the photos one at a
- * time is slower still, so the second button takes a whole multi-selection
- * from the media library and lays out one complete block per photo.
+ * The "Paste Events from Doc" button above the Classic Editor, and the assets
+ * behind its dialog. Used for the weekly round-up format (LIFE This Week),
+ * where a whole week of events arrives already written in a document.
  *
  * @package thestandard-life
  */
@@ -29,7 +25,7 @@ function tsl_is_life_edit_screen() {
 }
 
 /**
- * Add the buttons next to "Add Media" above the Classic Editor.
+ * Add the button next to "Add Media" above the Classic Editor.
  *
  * @param string $editor_id Editor instance being rendered.
  */
@@ -46,14 +42,6 @@ function tsl_editor_buttons( $editor_id ) {
 		.wp-media-buttons .button.tsl-editor-btn{display:inline-flex; align-items:center; gap:4px; vertical-align:top;}
 		.wp-media-buttons .button.tsl-editor-btn .dashicons{font-size:18px; width:18px; height:18px; line-height:1; vertical-align:middle;}
 	</style>
-	<button type="button" class="button tsl-editor-btn tsl-insert-event">
-		<span class="dashicons dashicons-plus-alt2"></span>
-		<?php esc_html_e( 'Insert Event Block', 'thestandard-life' ); ?>
-	</button>
-	<button type="button" class="button tsl-editor-btn tsl-insert-event-bulk">
-		<span class="dashicons dashicons-images-alt2"></span>
-		<?php esc_html_e( 'Insert Events from Images', 'thestandard-life' ); ?>
-	</button>
 	<button type="button" class="button tsl-editor-btn tsl-paste-events">
 		<span class="dashicons dashicons-clipboard"></span>
 		<?php esc_html_e( 'Paste Events from Doc', 'thestandard-life' ); ?>
@@ -70,7 +58,6 @@ function tsl_editor_buttons_assets() {
 		return;
 	}
 	wp_enqueue_media();
-	wp_add_inline_script( 'media-editor', tsl_editor_buttons_js() );
 
 	wp_enqueue_script(
 		'tsl-editor-paste',
@@ -134,95 +121,3 @@ function tsl_paste_dialog_css() {
 }
 add_action( 'admin_enqueue_scripts', 'tsl_editor_buttons_assets' );
 
-/**
- * The inserter script.
- *
- * Blocks are inserted through wp.media.editor.insert(), which routes to the
- * visual or the text tab depending on which one is open, so the buttons work
- * in both. The image markup carries the wp-image-{ID} class WordPress needs
- * to attach srcset/sizes when the post is rendered.
- *
- * @return string
- */
-function tsl_editor_buttons_js() {
-	$labels = wp_json_encode( array(
-		'name'    => __( 'ชื่องาน', 'thestandard-life' ),
-		'blurb'   => __( 'คำอธิบายงาน…', 'thestandard-life' ),
-		'time'      => __( 'Time:', 'thestandard-life' ),
-		'when'      => __( 'When:', 'thestandard-life' ),
-		'where'     => __( 'Where:', 'thestandard-life' ),
-		'admission' => __( 'Admission:', 'thestandard-life' ),
-		'booking'   => __( 'Booking:', 'thestandard-life' ),
-		'info'      => __( 'More Info:', 'thestandard-life' ),
-		'frame'   => __( 'Select event images (you can pick several at once)', 'thestandard-life' ),
-		'useThem' => __( 'Use these images', 'thestandard-life' ),
-	) );
-
-	return <<<JS
-( function( \$ ) {
-	var L = {$labels};
-
-	function esc( s ) {
-		return String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' )
-			.replace( />/g, '&gt;' ).replace( /"/g, '&quot;' );
-	}
-
-	// One complete event block. Pass an attachment to lead with its photo.
-	function block( attachment ) {
-		var figure = '';
-		if ( attachment ) {
-			var sizes = attachment.sizes || {};
-			var src   = ( sizes.large || sizes.medium_large || sizes.full || {} ).url || attachment.url;
-			figure = '<figure><img class="size-large wp-image-' + attachment.id + '" src="' + esc( src ) +
-				'" alt="' + esc( attachment.alt || '' ) + '" /></figure>\\n';
-		}
-		return '<h2>' + L.name + '</h2>\\n' +
-			figure +
-			'<p>' + L.blurb + '</p>\\n' +
-			'<p class="event-meta">' +
-			'<strong>' + L.time + '</strong> <br />' +
-			'<strong>' + L.when + '</strong> <br />' +
-			'<strong>' + L.where + '</strong> <br />' +
-			'<strong>' + L.admission + '</strong> <br />' +
-			'<strong>' + L.booking + '</strong> <br />' +
-			'<strong>' + L.info + '</strong> ' +
-			'</p>\\n<hr />\\n';
-	}
-
-	function insert( html ) {
-		if ( window.wp && wp.media && wp.media.editor ) {
-			wp.media.editor.insert( html );
-		}
-	}
-
-	\$( document ).on( 'click', '.tsl-insert-event', function( e ) {
-		e.preventDefault();
-		insert( block( null ) );
-	} );
-
-	var bulkFrame;
-	\$( document ).on( 'click', '.tsl-insert-event-bulk', function( e ) {
-		e.preventDefault();
-
-		// Rebuild each time so the selection never carries over between runs.
-		bulkFrame = wp.media( {
-			title: L.frame,
-			button: { text: L.useThem },
-			library: { type: 'image' },
-			multiple: 'add'
-		} );
-
-		bulkFrame.on( 'select', function() {
-			var out = bulkFrame.state().get( 'selection' ).map( function( m ) {
-				return block( m.toJSON() );
-			} );
-			if ( out.length ) {
-				insert( out.join( '\\n' ) );
-			}
-		} );
-
-		bulkFrame.open();
-	} );
-} )( jQuery );
-JS;
-}
