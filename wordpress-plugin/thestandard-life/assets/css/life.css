@@ -508,6 +508,10 @@
   /* An article with no H2s has no contents list; give its column back to the
      copy rather than leaving a 220px gutter. */
   .art-wrap.no-toc{grid-template-columns:minmax(0,1fr);}
+  /* With the contents list gone the column is the full width of the wrapper,
+     but the copy keeps its 720px measure — so it would sit against the left
+     edge while the title, cover and author box stay centred on the page. */
+  .art-wrap.no-toc > .prose{margin-left:auto; margin-right:auto;}
   .toc{position:sticky; top:96px;}
   .toc h6{font-family:var(--mono); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--line);}
   .toc ol{list-style:none; counter-reset:toc; display:flex; flex-direction:column; gap:12px;}
