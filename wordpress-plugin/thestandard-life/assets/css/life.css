@@ -574,9 +574,12 @@
   .tsl-album-slide figcaption{position:absolute; left:0; right:0; bottom:0; margin:0; padding:14px 60px;
     font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
     color:#fff; background:linear-gradient(transparent, rgba(0,0,0,.72)); text-align:center;}
+  /* These chips stay light in both themes because they sit on photographs, so
+     their arrow and hairline are fixed too — following --ink would turn the
+     arrow near-white in dark mode and hide it against its own background. */
   .tsl-album-nav{position:absolute; top:50%; transform:translateY(-50%); width:42px; height:42px;
     display:grid; place-items:center; border-radius:50%; cursor:pointer;
-    background:rgba(255,255,255,.92); color:var(--ink); border:1px solid var(--line);
+    background:rgba(255,255,255,.92); color:#111; border:1px solid rgba(0,0,0,.12);
     transition:background .2s, transform .2s;}
   .tsl-album-nav:hover{background:#fff; transform:translateY(-50%) scale(1.06);}
   .tsl-album-nav svg{width:20px; height:20px;}
