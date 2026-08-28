@@ -55,7 +55,13 @@ function tsl_render_gallery( $output, $attr, $instance = 0 ) {
 	$thumbs = '';
 
 	foreach ( $id_list as $i => $id ) {
+		// Slides keep their width/height attributes, unlike every other image
+		// on these pages. The stage takes its height from the photo, so without
+		// them the browser has no ratio to reserve space with and the stage
+		// lands on an arbitrary height until the file loads, then jumps.
+		remove_filter( 'wp_get_attachment_image', 'tsl_strip_image_dimensions' );
 		$full = wp_get_attachment_image( $id, 'large', false, array( 'loading' => $i ? 'lazy' : 'eager' ) );
+		add_filter( 'wp_get_attachment_image', 'tsl_strip_image_dimensions' );
 		if ( ! $full ) {
 			continue;
 		}

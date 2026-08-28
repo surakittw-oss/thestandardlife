@@ -134,12 +134,141 @@
 
     // Photo albums (Classic Editor galleries)
     (function () {
+      var ICON = {
+        prev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>',
+        next: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>',
+        close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
+      };
+
+      // Full-screen viewer, built once and reused by every album on the page.
+      function openLightbox(shots, startAt, onClose) {
+        var at = startAt;
+
+        var box = document.createElement('div');
+        box.className = 'tsl-lightbox';
+        box.setAttribute('role', 'dialog');
+        box.setAttribute('aria-modal', 'true');
+
+        var fig = document.createElement('figure');
+        fig.className = 'tsl-lightbox-fig';
+        var img = document.createElement('img');
+        var cap = document.createElement('figcaption');
+        fig.appendChild(img);
+        fig.appendChild(cap);
+        box.appendChild(fig);
+
+        var count = document.createElement('span');
+        count.className = 'tsl-lightbox-count';
+        box.appendChild(count);
+
+        function button(cls, label, icon) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'tsl-lightbox-btn ' + cls;
+          b.setAttribute('aria-label', label);
+          b.innerHTML = icon;
+          box.appendChild(b);
+          return b;
+        }
+        var prev = button('tsl-lightbox-prev', 'Previous photo', ICON.prev);
+        var next = button('tsl-lightbox-next', 'Next photo', ICON.next);
+        var close = button('tsl-lightbox-close', 'Close', ICON.close);
+        if (shots.length < 2) { prev.style.display = 'none'; next.style.display = 'none'; }
+
+        function render(i) {
+          at = (i + shots.length) % shots.length;
+          img.src = shots[at].src;
+          img.alt = shots[at].alt || '';
+          cap.textContent = shots[at].caption || '';
+          cap.style.display = shots[at].caption ? '' : 'none';
+          count.textContent = (at + 1) + ' / ' + shots.length;
+        }
+
+        function shut() {
+          box.remove();
+          document.removeEventListener('keydown', onKey);
+          document.documentElement.classList.remove('tsl-lightbox-open');
+          document.body.classList.remove('tsl-lightbox-open');
+          if (onClose) onClose(at);
+        }
+
+        function onKey(e) {
+          if (e.key === 'Escape') { shut(); }
+          if (e.key === 'ArrowLeft') { e.preventDefault(); render(at - 1); }
+          if (e.key === 'ArrowRight') { e.preventDefault(); render(at + 1); }
+        }
+
+        prev.addEventListener('click', function () { render(at - 1); });
+        next.addEventListener('click', function () { render(at + 1); });
+        close.addEventListener('click', shut);
+        // Clicking the backdrop closes; clicking the photo itself must not.
+        box.addEventListener('click', function (e) { if (e.target === box) shut(); });
+        document.addEventListener('keydown', onKey);
+
+        var lx = null;
+        box.addEventListener('touchstart', function (e) { lx = e.touches[0].clientX; }, { passive: true });
+        box.addEventListener('touchend', function (e) {
+          if (lx === null) return;
+          var dx = e.changedTouches[0].clientX - lx;
+          if (Math.abs(dx) > 40) render(dx < 0 ? at + 1 : at - 1);
+          lx = null;
+        }, { passive: true });
+
+        render(at);
+        document.documentElement.classList.add('tsl-lightbox-open');
+        document.body.classList.add('tsl-lightbox-open');
+        document.body.appendChild(box);
+        close.focus();
+      }
+
       document.querySelectorAll('.tsl-album').forEach(function (album) {
         var slides = album.querySelectorAll('.tsl-album-slide');
         var thumbs = album.querySelectorAll('.tsl-album-thumb');
         var counter = album.querySelector('.tsl-album-current');
-        if (slides.length < 2) return;
         var at = 0;
+
+        // The album shows a copy sized for a 720px column; blown up full-screen
+        // that would look soft. Read the widest candidate out of srcset instead
+        // of taking currentSrc, which is only the one picked for this viewport.
+        function widestSource(im) {
+          if (!im) return '';
+          var best = im.currentSrc || im.src;
+          var set = im.getAttribute('srcset');
+          if (set) {
+            var widest = 0;
+            set.split(',').forEach(function (part) {
+              var m = part.trim().match(/^(\S+)\s+(\d+)w$/);
+              if (m && parseInt(m[2], 10) > widest) { widest = parseInt(m[2], 10); best = m[1]; }
+            });
+          }
+          return best;
+        }
+
+        var shots = [].map.call(slides, function (s) {
+          var im = s.querySelector('img');
+          var cp = s.querySelector('figcaption');
+          return {
+            src: widestSource(im),
+            alt: im ? im.alt : '',
+            caption: cp ? cp.textContent.trim() : ''
+          };
+        });
+
+        function openAt(i) {
+          openLightbox(shots, i, function (endedAt) {
+            // Come back to whichever photo was left on screen.
+            if (slides.length > 1) show(endedAt);
+          });
+        }
+
+        [].forEach.call(slides, function (s, i) {
+          var im = s.querySelector('img');
+          if (!im) return;
+          im.addEventListener('click', function () { openAt(i); });
+        });
+
+        // A single-image gallery still gets the viewer, just no carousel.
+        if (slides.length < 2) return;
 
         function show(next) {
           at = (next + slides.length) % slides.length;
