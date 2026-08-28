@@ -67,7 +67,7 @@ function tsl_editor_buttons_assets() {
 		'tsl-editor-paste',
 		TSL_URL . 'assets/js/editor-paste.js',
 		array( 'jquery', 'media-editor' ),
-		TSL_VERSION,
+		tsl_asset_version( 'assets/js/editor-paste.js' ),
 		true
 	);
 	wp_localize_script( 'tsl-editor-paste', 'TSL_PASTE', array(
@@ -93,7 +93,7 @@ function tsl_editor_buttons_assets() {
 		'tsl-editor-gallery',
 		TSL_URL . 'assets/js/editor-gallery.js',
 		array( 'jquery', 'media-editor', 'media-views' ),
-		TSL_VERSION,
+		tsl_asset_version( 'assets/js/editor-gallery.js' ),
 		true
 	);
 	wp_add_inline_style( 'wp-admin', tsl_paste_dialog_css() );

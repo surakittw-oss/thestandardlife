@@ -42,6 +42,25 @@
       });
     })();
 
+    // Masthead date
+    //
+    // The date is printed into the page when it is generated, so once a page
+    // cache holds a copy every later visitor is shown the day that copy was
+    // built. Rewriting it here costs nothing and makes the date independent of
+    // how long the HTML has been sitting in a cache.
+    (function () {
+      var el = document.querySelector('.mh-date');
+      if (!el) return;
+      try {
+        var today = new Date().toLocaleDateString(document.documentElement.lang || undefined, {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+        if (today && today !== el.textContent.trim()) el.textContent = today;
+      } catch (e) {
+        // Leave the server-rendered date if the browser cannot format one.
+      }
+    })();
+
     // Sticky nav shadow on scroll
     (function () {
       var nav = document.querySelector('.nav');

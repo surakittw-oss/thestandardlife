@@ -65,8 +65,8 @@ function tsl_enqueue_assets() {
 		array(),
 		null
 	);
-	wp_enqueue_style( 'tsl-life', TSL_URL . 'assets/css/life.css', array( 'tsl-fonts' ), TSL_VERSION );
-	wp_enqueue_script( 'tsl-life', TSL_URL . 'assets/js/theme.js', array(), TSL_VERSION, true );
+	wp_enqueue_style( 'tsl-life', TSL_URL . 'assets/css/life.css', array( 'tsl-fonts' ), tsl_asset_version( 'assets/css/life.css' ) );
+	wp_enqueue_script( 'tsl-life', TSL_URL . 'assets/js/theme.js', array(), tsl_asset_version( 'assets/js/theme.js' ), true );
 }
 add_action( 'wp_enqueue_scripts', 'tsl_enqueue_assets' );
 

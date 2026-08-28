@@ -28,6 +28,7 @@ require_once TSL_DIR . 'inc/settings-page.php';
 require_once TSL_DIR . 'inc/editor-buttons.php';
 require_once TSL_DIR . 'inc/admin-icon.php';
 require_once TSL_DIR . 'inc/gallery.php';
+require_once TSL_DIR . 'inc/cache.php';
 
 /**
  * Register the LIFE custom post type + its own taxonomy.

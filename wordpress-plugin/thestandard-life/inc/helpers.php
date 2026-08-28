@@ -191,3 +191,21 @@ function tsl_linkify_event_meta( $content ) {
 	);
 }
 add_filter( 'the_content', 'tsl_linkify_event_meta', 20 );
+
+/**
+ * Cache-busting version string for a bundled asset.
+ *
+ * TSL_VERSION alone is the plugin's release number, which does not move every
+ * time a stylesheet is edited — so a browser or CDN holding assets under a
+ * far-future expiry keeps serving the old file to anyone who has visited
+ * before. Folding the file's own modification time into the version means an
+ * edited asset always arrives under a URL nobody has cached yet.
+ *
+ * @param string $rel Path relative to the plugin directory.
+ * @return string
+ */
+function tsl_asset_version( $rel ) {
+	$path  = TSL_DIR . ltrim( $rel, '/' );
+	$mtime = file_exists( $path ) ? filemtime( $path ) : false;
+	return $mtime ? TSL_VERSION . '.' . $mtime : TSL_VERSION;
+}
