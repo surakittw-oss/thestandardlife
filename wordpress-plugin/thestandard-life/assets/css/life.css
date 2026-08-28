@@ -492,6 +492,9 @@
   .art-share a{width:38px; height:38px; border:1px solid var(--line); border-radius:50%; display:grid; place-items:center; color:var(--ink); transition:background .2s,color .2s,border-color .2s;}
   .art-share a:hover{background:var(--ink); color:var(--paper); border-color:var(--ink);}
   .art-share svg{width:16px; height:16px; fill:currentColor;}
+  /* A CSS fill beats an inline fill="none", so a stroke-drawn icon dropped in
+     here would flood solid. Honour the icon's own intent instead. */
+  .art-share svg[fill="none"]{fill:none; stroke:currentColor;}
 
   /* hero image */
   .art-hero-img{max-width:1400px; margin:0 auto; padding:0 48px 12px;}
