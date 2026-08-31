@@ -511,7 +511,11 @@
   /* With the contents list gone the column is the full width of the wrapper,
      but the copy keeps its 720px measure — so it would sit against the left
      edge while the title, cover and author box stay centred on the page. */
-  .art-wrap.no-toc > .prose{margin-left:auto; margin-right:auto;}
+  /* width:100% matters: auto margins stop a grid item stretching to its track
+     and make it size to its content instead. With the 720px cap lifted on
+     phones that let the copy grow past the screen, so the width is pinned to
+     the track and the cap does the limiting. */
+  .art-wrap.no-toc > .prose{width:100%; margin-left:auto; margin-right:auto;}
   .toc{position:sticky; top:96px;}
   .toc h6{font-family:var(--mono); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--line);}
   .toc ol{list-style:none; counter-reset:toc; display:flex; flex-direction:column; gap:12px;}
