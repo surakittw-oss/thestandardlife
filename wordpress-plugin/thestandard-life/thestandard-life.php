@@ -72,10 +72,16 @@ function tsl_register_cpt() {
 add_action( 'init', 'tsl_register_cpt' );
 
 /**
- * Add the tsl-cover image size (1200x628, cropped) used by the cards.
+ * Add the tsl-cover image size (1200x628, cropped) used by the cards, and a
+ * menu location of our own so the LIFE bar can be arranged in Appearance >
+ * Menus without disturbing the menus the rest of the site uses.
  */
 function tsl_after_setup() {
 	add_image_size( 'tsl-cover', 1200, 628, true );
+
+	register_nav_menus( array(
+		'tsl_life_nav' => __( 'LIFE menu (top bar)', 'thestandard-life' ),
+	) );
 }
 add_action( 'after_setup_theme', 'tsl_after_setup' );
 

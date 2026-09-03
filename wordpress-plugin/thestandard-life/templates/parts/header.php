@@ -68,21 +68,39 @@ $tsl_terms = get_terms( array(
 			</button>
 		</div>
 
-		<ul>
-			<?php
-			if ( ! empty( $tsl_terms ) && ! is_wp_error( $tsl_terms ) ) {
-				foreach ( $tsl_terms as $t ) {
-					$link = get_term_link( $t );
-					if ( is_wp_error( $link ) ) {
-						continue;
-					}
-					echo '<li><a href="' . esc_url( $link ) . '">' . esc_html( $t->name ) . '</a></li>';
-				}
-			} else {
-				echo '<li><a href="' . esc_url( $tsl_home ) . '">' . esc_html__( 'All LIFE', 'thestandard-life' ) . '</a></li>';
-			}
+		<?php
+		if ( has_nav_menu( 'tsl_life_nav' ) ) :
+			// A menu has been arranged in Appearance > Menus — use it as-is.
+			// items_wrap keeps the plain <ul> the bar's CSS is written against,
+			// and depth 1 because this bar has no dropdowns: a nested item would
+			// otherwise render as an unstyled list hanging off the bar.
+			wp_nav_menu( array(
+				'theme_location' => 'tsl_life_nav',
+				'container'      => false,
+				'items_wrap'     => '<ul>%3$s</ul>',
+				'depth'          => 1,
+				'fallback_cb'    => false,
+			) );
+		else :
+			// Nothing assigned yet: list the categories that have posts, so the
+			// bar is never empty on a fresh install.
 			?>
-		</ul>
+			<ul>
+				<?php
+				if ( ! empty( $tsl_terms ) && ! is_wp_error( $tsl_terms ) ) {
+					foreach ( $tsl_terms as $t ) {
+						$link = get_term_link( $t );
+						if ( is_wp_error( $link ) ) {
+							continue;
+						}
+						echo '<li><a href="' . esc_url( $link ) . '">' . esc_html( $t->name ) . '</a></li>';
+					}
+				} else {
+					echo '<li><a href="' . esc_url( $tsl_home ) . '">' . esc_html__( 'All LIFE', 'thestandard-life' ) . '</a></li>';
+				}
+				?>
+			</ul>
+		<?php endif; ?>
 
 		<div class="nav-meta">
 			<a class="search" href="<?php echo esc_url( home_url( '/?s=&post_type=' . TSL_CPT ) ); ?>" aria-label="<?php esc_attr_e( 'Search', 'thestandard-life' ); ?>">
