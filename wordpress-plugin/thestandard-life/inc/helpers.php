@@ -209,3 +209,48 @@ function tsl_asset_version( $rel ) {
 	$mtime = file_exists( $path ) ? filemtime( $path ) : false;
 	return $mtime ? TSL_VERSION . '.' . $mtime : TSL_VERSION;
 }
+
+/**
+ * A post's categories rendered as links to their archives.
+ *
+ * Readers treat the category above a headline as the way into that section, so
+ * it has to be a link. Only for labels that are not already inside one — the
+ * cards wrap the whole tile in an anchor, and nesting a second one there would
+ * be invalid markup.
+ *
+ * @param int|null $post_id Post ID.
+ * @param string   $sep     Separator between categories.
+ * @return string HTML, or plain text if a term has no valid archive link.
+ */
+function tsl_category_links( $post_id = null, $sep = ' &middot; ' ) {
+	$terms = get_the_terms( $post_id ? $post_id : get_the_ID(), TSL_TAX );
+	if ( empty( $terms ) || is_wp_error( $terms ) ) {
+		return '';
+	}
+
+	$out = array();
+	foreach ( $terms as $term ) {
+		$link  = get_term_link( $term );
+		$out[] = is_wp_error( $link )
+			? esc_html( $term->name )
+			: '<a href="' . esc_url( $link ) . '">' . esc_html( $term->name ) . '</a>';
+	}
+	return implode( $sep, $out );
+}
+
+/**
+ * The primary category as a link.
+ *
+ * @param int|null $post_id Post ID.
+ * @return string
+ */
+function tsl_primary_category_link( $post_id = null ) {
+	$term = tsl_primary_category_term( $post_id );
+	if ( ! $term ) {
+		return '';
+	}
+	$link = get_term_link( $term );
+	return is_wp_error( $link )
+		? esc_html( $term->name )
+		: '<a href="' . esc_url( $link ) . '">' . esc_html( $term->name ) . '</a>';
+}

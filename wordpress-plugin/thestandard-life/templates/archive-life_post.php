@@ -72,7 +72,7 @@ $shown_ids = array_merge( array( $cover_id ), wp_list_pluck( $hero_left, 'ID' ) 
 			$GLOBALS['post'] = $cover_post; // phpcs:ignore
 			setup_postdata( $GLOBALS['post'] );
 			?>
-			<span class="cat"><?php echo esc_html( tsl_primary_category() ); ?> &middot; <?php esc_html_e( 'The Cover Story', 'thestandard-life' ); ?></span>
+			<span class="cat"><?php echo tsl_primary_category_link(); // phpcs:ignore WordPress.Security.EscapeOutput ?> &middot; <?php esc_html_e( 'The Cover Story', 'thestandard-life' ); ?></span>
 			<h1><a href="<?php the_permalink(); ?>" style="color:inherit;"><?php the_title(); ?></a></h1>
 			<p class="dek"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 42 ) ); ?></p>
 			<figure class="img-frame">

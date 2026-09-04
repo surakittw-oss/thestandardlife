@@ -43,11 +43,9 @@ while ( have_posts() ) :
 		<header class="art-head">
 			<span class="art-kicker">
 				<?php
-				$labels = array();
-				foreach ( $cats as $c ) {
-					$labels[] = $c->name;
-				}
-				echo esc_html( implode( ' · ', $labels ) );
+				// Linked: this is where a reader goes looking for the rest of the
+				// section. Escaping happens per-term inside the helper.
+				echo tsl_category_links(); // phpcs:ignore WordPress.Security.EscapeOutput
 				?>
 			</span>
 			<h1 class="art-title"><?php the_title(); ?></h1>
@@ -147,7 +145,7 @@ while ( have_posts() ) :
 						?>
 						<article class="rel-card">
 							<a href="<?php the_permalink(); ?>"><?php tsl_cover_image( 'tsl-cover' ); ?></a>
-							<span class="cat"><?php echo esc_html( tsl_primary_category() ); ?></span>
+							<span class="cat"><?php echo tsl_primary_category_link(); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
 							<h4><a href="<?php the_permalink(); ?>" style="color:inherit;"><?php the_title(); ?></a></h4>
 							<p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 16 ) ); ?></p>
 							<div class="meta"><?php echo esc_html( get_the_date() ); ?> &middot; <?php echo esc_html( tsl_reading_time() ); ?> min</div>
