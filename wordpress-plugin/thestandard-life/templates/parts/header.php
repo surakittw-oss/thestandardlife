@@ -87,16 +87,29 @@ $tsl_terms = get_terms( array(
 			?>
 			<ul>
 				<?php
+				// Home points at the LIFE landing page, not the site root: every
+				// other item in this bar is a LIFE section, and the breadcrumb
+				// already carries a link back to the site itself.
+				printf(
+					'<li class="%s"><a href="%s">%s</a></li>',
+					esc_attr( is_post_type_archive( TSL_CPT ) ? 'current-menu-item' : '' ),
+					esc_url( $tsl_home ),
+					esc_html__( 'Home', 'thestandard-life' )
+				);
+
 				if ( ! empty( $tsl_terms ) && ! is_wp_error( $tsl_terms ) ) {
 					foreach ( $tsl_terms as $t ) {
 						$link = get_term_link( $t );
 						if ( is_wp_error( $link ) ) {
 							continue;
 						}
-						echo '<li><a href="' . esc_url( $link ) . '">' . esc_html( $t->name ) . '</a></li>';
+						printf(
+							'<li class="%s"><a href="%s">%s</a></li>',
+							esc_attr( is_tax( TSL_TAX, $t->term_id ) ? 'current-menu-item' : '' ),
+							esc_url( $link ),
+							esc_html( $t->name )
+						);
 					}
-				} else {
-					echo '<li><a href="' . esc_url( $tsl_home ) . '">' . esc_html__( 'All LIFE', 'thestandard-life' ) . '</a></li>';
 				}
 				?>
 			</ul>

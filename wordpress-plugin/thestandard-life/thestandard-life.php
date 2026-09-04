@@ -44,6 +44,9 @@ function tsl_register_cpt() {
 			'search_items'  => __( 'Search LIFE', 'thestandard-life' ),
 			'not_found'     => __( 'No LIFE found', 'thestandard-life' ),
 			'menu_name'     => __( 'THE STANDARD LIFE', 'thestandard-life' ),
+			// Names the landing page where it appears as a tick-box in
+			// Appearance > Menus; it would otherwise read "Post Archives".
+			'archives'      => __( 'LIFE Home', 'thestandard-life' ),
 		),
 		'public'       => true,
 		'has_archive'  => true, // /life/ becomes the LIFE landing page.
