@@ -476,7 +476,10 @@
    ========================================================================== */
 /* ============ ARTICLE PAGE ============ */
   /* reading progress */
-  .progress{position:fixed; top:0; left:0; height:3px; width:0; background:var(--ink); z-index:200; transition:width .1s linear;}
+  /* Sits on the nav's bottom edge. The nav is sticky, so that edge moves until
+     it pins to the top — its position is set from JS rather than guessed at,
+     and top:0 here is only what a reader without JS would see. */
+  .progress{position:fixed; top:0; left:0; height:4px; width:0; background:var(--ink); z-index:99; transition:width .1s linear;}
 
   /* breadcrumb */
   .breadcrumb{max-width:1400px; margin:0 auto; padding:20px 48px; display:flex; gap:8px; align-items:center; font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);}

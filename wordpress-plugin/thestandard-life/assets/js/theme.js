@@ -74,12 +74,24 @@
     (function () {
       var bar = document.getElementById('progress');
       if (!bar) return;
+      var nav = document.querySelector('.nav');
+
       var onScroll = function () {
         var h = document.documentElement;
         var max = h.scrollHeight - h.clientHeight;
         bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+
+        // Ride the nav's bottom edge. That edge travels up the screen until the
+        // nav pins to the top, so it is read each time rather than assumed —
+        // and the nav is taller on a phone with the menu drawer open.
+        if (nav) {
+          var edge = nav.getBoundingClientRect().bottom;
+          bar.style.top = Math.max(0, Math.round(edge)) + 'px';
+        }
       };
+
       window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
       onScroll();
     })();
 
