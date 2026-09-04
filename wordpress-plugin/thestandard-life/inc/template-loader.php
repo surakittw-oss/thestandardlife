@@ -67,6 +67,13 @@ function tsl_enqueue_assets() {
 	);
 	wp_enqueue_style( 'tsl-life', TSL_URL . 'assets/css/life.css', array( 'tsl-fonts' ), tsl_asset_version( 'assets/css/life.css' ) );
 	wp_enqueue_script( 'tsl-life', TSL_URL . 'assets/js/theme.js', array(), tsl_asset_version( 'assets/js/theme.js' ), true );
+
+	// The view counter runs from the browser, so it needs the endpoint handed
+	// to it — the page it lives on may well have come from a cache.
+	wp_localize_script( 'tsl-life', 'TSL_VIEWS', array(
+		'endpoint' => rest_url( 'tsl/v1/view/' ),
+		'label'    => __( 'เข้าชม %s ครั้ง', 'thestandard-life' ),
+	) );
 }
 add_action( 'wp_enqueue_scripts', 'tsl_enqueue_assets' );
 

@@ -132,6 +132,64 @@
       }
     })();
 
+    // View counter
+    //
+    // Reported from here rather than counted while the page renders, because a
+    // page served from cache never reaches PHP. Waiting for a sign the article
+    // is actually being read — a few seconds, or a scroll — keeps bounces and
+    // the many bots that never run JavaScript out of the number.
+    (function () {
+      var el = document.querySelector('.tsl-views[data-post-id]');
+      if (!el || !window.TSL_VIEWS || !window.TSL_VIEWS.endpoint) return;
+
+      var id = el.getAttribute('data-post-id');
+      var key = 'tsl-viewed-' + id;
+      var DAY = 86400000;
+
+      // Don't report the same article twice from one browser in a day, so a
+      // reader refreshing does not run the number up.
+      try {
+        var seen = parseInt(localStorage.getItem(key) || '0', 10);
+        if (seen && Date.now() - seen < DAY) return;
+      } catch (e) { /* private mode — fall through and just report it */ }
+
+      var sent = false;
+      function report() {
+        if (sent) return;
+        sent = true;
+        clearTimeout(timer);
+        window.removeEventListener('scroll', onScroll);
+
+        fetch(window.TSL_VIEWS.endpoint + id, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            if (!data || typeof data.views !== 'number') return;
+            try { localStorage.setItem(key, String(Date.now())); } catch (e) {}
+
+            // Write the fresh total in, so the figure is not the one that was
+            // cached with the page.
+            var n = el.querySelector('.tsl-views-n');
+            if (n) n.textContent = data.views.toLocaleString();
+            el.hidden = false;
+            var dot = document.querySelector('.tsl-views-dot');
+            if (dot) dot.hidden = false;
+          })
+          .catch(function () { /* a missed count is not worth bothering the reader about */ });
+      }
+
+      function onScroll() {
+        var h = document.documentElement;
+        var max = h.scrollHeight - h.clientHeight;
+        if (max > 0 && h.scrollTop / max > 0.15) report();
+      }
+
+      var timer = setTimeout(report, 5000);
+      window.addEventListener('scroll', onScroll, { passive: true });
+    })();
+
     // Photo albums (Classic Editor galleries)
     (function () {
       var ICON = {

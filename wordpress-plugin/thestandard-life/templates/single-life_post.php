@@ -60,6 +60,15 @@ while ( have_posts() ) :
 				<span><?php echo esc_html( get_the_date() ); ?></span>
 				<span class="dot"></span>
 				<span><?php printf( esc_html__( 'อ่าน %d นาที', 'thestandard-life' ), tsl_reading_time() ); ?></span>
+				<?php
+				// Rendered empty at zero so a brand-new article does not open on
+				// "0 views"; the browser fills it in once the view is recorded.
+				$tsl_views = tsl_get_views( get_the_ID() );
+				?>
+				<span class="dot tsl-views-dot"<?php echo $tsl_views ? '' : ' hidden'; ?>></span>
+				<span class="tsl-views" data-post-id="<?php echo esc_attr( get_the_ID() ); ?>"<?php echo $tsl_views ? '' : ' hidden'; ?>>
+					<?php printf( esc_html__( 'เข้าชม %s ครั้ง', 'thestandard-life' ), '<span class="tsl-views-n">' . esc_html( number_format_i18n( $tsl_views ) ) . '</span>' ); ?>
+				</span>
 			</div>
 			<div class="art-share">
 				<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $url_enc; ?>" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M24 12a12 12 0 1 0-13.88 11.86v-8.39H7.08V12h3.04V9.36c0-3 1.79-4.67 4.53-4.67a18.4 18.4 0 0 1 2.68.24v2.95h-1.51c-1.49 0-1.95.92-1.95 1.87V12h3.32l-.53 3.47h-2.79v8.39A12 12 0 0 0 24 12"/></svg></a>
