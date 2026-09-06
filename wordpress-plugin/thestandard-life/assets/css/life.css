@@ -863,8 +863,6 @@
   .watch-body{display:block; margin-top:18px;}
   .watch-title{display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical;
     overflow:hidden; font-family:var(--sans); font-weight:600; letter-spacing:-.01em; color:var(--ink);}
-  .watch-dek{display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical;
-    overflow:hidden; margin-top:12px; font-size:14.5px; line-height:1.7; color:var(--muted);}
   .watch-meta{display:block; margin-top:12px; font-family:var(--mono); font-size:10.5px;
     letter-spacing:.14em; text-transform:uppercase; color:var(--muted);}
   .watch-lead .watch-title{font-size:26px; line-height:1.35;}
@@ -900,7 +898,6 @@
   @media (max-width: 600px){
     .watch{padding-left:16px; padding-right:16px; gap:28px;}
     .watch-lead .watch-title{font-size:20px;}
-    .watch-lead .watch-dek{font-size:14px;}
     .watch-item{grid-template-columns:120px 1fr; gap:13px;}
     .watch-item .watch-title{font-size:14px;}
     .watch-play{width:46px; height:46px;}

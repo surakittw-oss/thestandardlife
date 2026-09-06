@@ -84,11 +84,12 @@ function tsl_watch_meta( $video ) {
 			aria-label="<?php echo esc_attr( sprintf( __( 'เล่นคลิป: %s', 'thestandard-life' ), $tsl_watch_lead['title'] ) ); ?>">
 			<?php tsl_watch_thumb( $tsl_watch_lead ); ?>
 			<span class="watch-body">
+				<?php
+				// Title only. At this size the thumbnail and the headline already
+				// say what the episode is, and the running time is on the frame —
+				// a summary and a view count underneath only crowd them.
+				?>
 				<span class="watch-title"><?php echo esc_html( $tsl_watch_lead['title'] ); ?></span>
-				<?php if ( ! empty( $tsl_watch_lead['description'] ) ) : ?>
-					<span class="watch-dek"><?php echo esc_html( wp_trim_words( $tsl_watch_lead['description'], 34 ) ); ?></span>
-				<?php endif; ?>
-				<?php tsl_watch_meta( $tsl_watch_lead ); ?>
 			</span>
 		</button>
 
