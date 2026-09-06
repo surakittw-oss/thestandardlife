@@ -836,3 +836,74 @@
     .reels-arrow{display:none;}
     .reels-bar{margin-left:16px; margin-right:16px; margin-top:18px;}
   }
+
+  /* ---------- WATCH (full YouTube episodes) ----------
+     One lead card carrying a summary, the rest as a list. Not another sideways
+     row: a fifty-minute episode has to be read about before it is chosen, and
+     a second strip of the same shape would also make the page look like a
+     video site rather than a magazine. */
+  .watch{display:grid; grid-template-columns:1.55fr 1fr; gap:44px; padding:0 48px; align-items:start;}
+  .watch-lead, .watch-item{display:block; width:100%; text-align:left;}
+  .watch-frame{position:relative; display:block; aspect-ratio:16/9; overflow:hidden;
+    border-radius:var(--r); background:var(--cream);}
+  .watch-frame img{width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
+  .watch-lead:hover .watch-frame img,
+  .watch-item:hover .watch-frame img{transform:scale(1.035);}
+  .watch-play{position:absolute; inset:0; margin:auto; width:56px; height:56px;
+    display:grid; place-items:center; border-radius:50%; background:rgba(0,0,0,.55);
+    color:#fff; backdrop-filter:blur(4px); transition:background .2s ease;}
+  .watch-play svg{width:24px; height:24px; margin-left:3px;}
+  .watch-lead:hover .watch-play, .watch-item:hover .watch-play{background:rgba(0,0,0,.82);}
+  /* Always dark-on-light regardless of theme: it sits on a photograph, not on
+     the page, so it has to hold up against whatever that frame happens to be. */
+  .watch-len{position:absolute; right:8px; bottom:8px; padding:3px 7px; border-radius:4px;
+    background:rgba(0,0,0,.82); color:#fff; font-family:var(--mono); font-size:11px;
+    letter-spacing:.04em; line-height:1.5;}
+
+  .watch-body{display:block; margin-top:18px;}
+  .watch-title{display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical;
+    overflow:hidden; font-family:var(--sans); font-weight:600; letter-spacing:-.01em; color:var(--ink);}
+  .watch-dek{display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical;
+    overflow:hidden; margin-top:12px; font-size:14.5px; line-height:1.7; color:var(--muted);}
+  .watch-meta{display:block; margin-top:12px; font-family:var(--mono); font-size:10.5px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--muted);}
+  .watch-lead .watch-title{font-size:26px; line-height:1.35;}
+  .watch-lead:focus-visible, .watch-item:focus-visible{outline:2px solid var(--ink); outline-offset:4px; border-radius:var(--r);}
+
+  /* The list beside it: thumbnail left, title right, divided like the rest of
+     the page rather than boxed. */
+  .watch-list{list-style:none; margin:0; padding:0;}
+  .watch-list > li + li{margin-top:20px; padding-top:20px; border-top:1px solid var(--line);}
+  .watch-item{display:grid; grid-template-columns:148px 1fr; gap:16px; align-items:start;}
+  .watch-item .watch-body{margin-top:0;}
+  .watch-item .watch-title{font-size:15px; line-height:1.5; -webkit-line-clamp:3; line-clamp:3;}
+  .watch-item .watch-meta{margin-top:8px; font-size:10px;}
+  .watch-item .watch-play{width:34px; height:34px;}
+  .watch-item .watch-play svg{width:15px; height:15px; margin-left:2px;}
+  .watch-item .watch-len{right:5px; bottom:5px; padding:2px 5px; font-size:10px;}
+
+  /* The player, in landscape. Height drives the box for the same reason the
+     portrait one does — see .tsl-lightbox-reel. */
+  .tsl-lightbox-wide{aspect-ratio:16/9; width:min(1080px, calc(100vw - 160px));
+    max-height:82vh; background:#000; border-radius:12px; overflow:hidden;}
+  .tsl-lightbox-wide iframe{display:block; width:100%; height:100%; border:0;}
+
+  /* Same reason the Reels breakpoints sit next to their own rules: equal
+     specificity, so file order decides which wins. */
+  @media (max-width: 1100px){
+    .watch{grid-template-columns:1fr; gap:36px;}
+    .watch-lead .watch-title{font-size:23px;}
+  }
+  @media (max-width: 900px){
+    .watch{padding-left:24px; padding-right:24px;}
+  }
+  @media (max-width: 600px){
+    .watch{padding-left:16px; padding-right:16px; gap:28px;}
+    .watch-lead .watch-title{font-size:20px;}
+    .watch-lead .watch-dek{font-size:14px;}
+    .watch-item{grid-template-columns:120px 1fr; gap:13px;}
+    .watch-item .watch-title{font-size:14px;}
+    .watch-play{width:46px; height:46px;}
+    .watch-play svg{width:20px; height:20px;}
+    .tsl-lightbox-wide{width:calc(100vw - 28px);}
+  }

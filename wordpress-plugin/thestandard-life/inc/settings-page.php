@@ -104,6 +104,35 @@ function tsl_home_sections() {
 				'tsl_reels_manual_6' => array( __( 'คลิปที่ 6', 'thestandard-life' ), 'url', '' ),
 			),
 		),
+		'watch'    => array(
+			'title'  => __( 'Watch (คลิปเต็ม YouTube)', 'thestandard-life' ),
+			'fields' => array(
+				'tsl_watch_source'   => array(
+					__( 'ดึงคลิปจาก', 'thestandard-life' ),
+					'select',
+					'youtube',
+					array(
+						'youtube' => __( 'YouTube — ดึงอัตโนมัติทุก 30 นาที', 'thestandard-life' ),
+						'manual'  => __( 'ใส่ลิงก์เอง (4 คลิปด้านล่าง)', 'thestandard-life' ),
+						'off'     => __( 'ปิดส่วนนี้', 'thestandard-life' ),
+					),
+				),
+				'tsl_watch_playlist' => array( __( 'ลิงก์ช่อง Videos หรือ Playlist', 'thestandard-life' ), 'text', '' ),
+				'tsl_watch_count'    => array(
+					__( 'แสดงกี่คลิป', 'thestandard-life' ),
+					'select',
+					'4',
+					array( '4' => __( '4 (ใหญ่ 1 + เล็ก 3)', 'thestandard-life' ), '5' => __( '5 (ใหญ่ 1 + เล็ก 4)', 'thestandard-life' ) ),
+				),
+				'tsl_watch_kicker'   => array( __( 'Label', 'thestandard-life' ), 'text', 'Watch · ดูฉบับเต็ม' ),
+				'tsl_watch_title'    => array( __( 'Title', 'thestandard-life' ), 'text', 'ตอนเต็ม ที่ควรมีเวลาให้' ),
+				'tsl_watch_more'     => array( __( 'ลิงก์ "ดูทั้งหมด" (ไม่ใส่ก็ได้)', 'thestandard-life' ), 'url', '' ),
+				'tsl_watch_manual_1' => array( __( 'คลิปที่ 1 (ตัวใหญ่)', 'thestandard-life' ), 'url', '' ),
+				'tsl_watch_manual_2' => array( __( 'คลิปที่ 2', 'thestandard-life' ), 'url', '' ),
+				'tsl_watch_manual_3' => array( __( 'คลิปที่ 3', 'thestandard-life' ), 'url', '' ),
+				'tsl_watch_manual_4' => array( __( 'คลิปที่ 4', 'thestandard-life' ), 'url', '' ),
+			),
+		),
 		'quote'    => array(
 			'title'  => __( 'Pull Quote', 'thestandard-life' ),
 			'fields' => array(

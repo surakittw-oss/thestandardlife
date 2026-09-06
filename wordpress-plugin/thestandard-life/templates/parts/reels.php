@@ -9,11 +9,11 @@
  * @package thestandard-life
  */
 
-$tsl_reels = tsl_reels_items();
+$tsl_reels = tsl_yt_items( 'reels' );
 if ( empty( $tsl_reels ) ) {
 	return;
 }
-$tsl_reels_more = tsl_reels_more_link();
+$tsl_reels_more = tsl_yt_more_link( 'reels' );
 ?>
 <section class="section reels-section">
 	<div class="section-head">

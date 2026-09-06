@@ -395,14 +395,14 @@
       });
     })();
 
-    // Reels strip (YouTube Shorts)
+    // YouTube blocks — the Reels strip of Shorts, and the Watch block of full
+    // episodes. Same player, different shape.
     (function () {
-      var rail = document.querySelector('.reels-rail');
-      if (!rail) return;
-
-      var strip = rail.querySelector('.reels');
-      var cards = Array.prototype.slice.call(rail.querySelectorAll('.reel'));
-      if (!strip || !cards.length) return;
+      var groups = [
+        { cards: document.querySelectorAll('.reels .reel'), portrait: true },
+        { cards: document.querySelectorAll('.watch [data-video]'), portrait: false }
+      ].filter(function (g) { return g.cards.length; });
+      if (!groups.length) return;
 
       // YouTube generates maxresdefault for most videos but not all. A missing
       // one does not reliably 404: i.ytimg.com sometimes answers 200 with a
@@ -410,10 +410,7 @@
       // both outcomes are checked, and hqdefault — which always exists — is
       // swapped in. The data-fallback attribute is cleared on use, so a failing
       // fallback cannot loop.
-      cards.forEach(function (card) {
-        var img = card.querySelector('img');
-        if (!img) return;
-
+      document.querySelectorAll('.reel img, .watch img').forEach(function (img) {
         function useFallback() {
           var alt = img.getAttribute('data-fallback');
           if (!alt || img.src === alt) return;
@@ -442,7 +439,7 @@
         close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
       };
 
-      function play(startAt) {
+      function play(cards, startAt, portrait) {
         var at = startAt;
         var opener = cards[startAt];
 
@@ -452,7 +449,7 @@
         box.setAttribute('aria-modal', 'true');
 
         var stage = document.createElement('div');
-        stage.className = 'tsl-lightbox-reel';
+        stage.className = portrait ? 'tsl-lightbox-reel' : 'tsl-lightbox-wide';
         var frame = document.createElement('iframe');
         frame.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
         frame.setAttribute('allowfullscreen', '');
@@ -516,16 +513,26 @@
         close.focus();
       }
 
-      cards.forEach(function (card, i) {
-        card.addEventListener('click', function () { play(i); });
+      // Each block is its own reel of clips: paging inside the player stays
+      // within the block you opened it from.
+      groups.forEach(function (group) {
+        var cards = Array.prototype.slice.call(group.cards);
+        cards.forEach(function (card, i) {
+          card.addEventListener('click', function () { play(cards, i, group.portrait); });
+        });
       });
 
-      // ---- arrows and scroll bar -------------------------------------------
+      // ---- arrows and scroll bar (Reels only) ------------------------------
+      var rail = document.querySelector('.reels-rail');
+      if (!rail) return;
+
+      var strip = rail.querySelector('.reels');
+      var cards = Array.prototype.slice.call(rail.querySelectorAll('.reel'));
       var back = rail.querySelector('.reels-prev');
       var fwd = rail.querySelector('.reels-next');
       var bar = rail.querySelector('.reels-bar');
       var thumb = bar && bar.querySelector('.reels-bar-thumb');
-      if (!back || !fwd) return;
+      if (!strip || !cards.length || !back || !fwd) return;
 
       function slack() { return strip.scrollWidth - strip.clientWidth; }
 

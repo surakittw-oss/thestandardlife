@@ -303,5 +303,8 @@ if ( ! empty( $cats ) && ! is_wp_error( $cats ) ) {
 }
 ?>
 
+<!-- WATCH (full episodes) -->
+<?php tsl_part( 'watch' ); ?>
+
 <?php
 tsl_get_footer();

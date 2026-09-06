@@ -30,7 +30,7 @@ require_once TSL_DIR . 'inc/admin-icon.php';
 require_once TSL_DIR . 'inc/gallery.php';
 require_once TSL_DIR . 'inc/cache.php';
 require_once TSL_DIR . 'inc/views.php';
-require_once TSL_DIR . 'inc/reels.php';
+require_once TSL_DIR . 'inc/youtube.php';
 
 /**
  * Register the LIFE custom post type + its own taxonomy.
@@ -101,6 +101,6 @@ register_activation_hook( __FILE__, 'tsl_activate' );
 
 function tsl_deactivate() {
 	flush_rewrite_rules();
-	tsl_reels_unschedule();
+	tsl_yt_unschedule();
 }
 register_deactivation_hook( __FILE__, 'tsl_deactivate' );
