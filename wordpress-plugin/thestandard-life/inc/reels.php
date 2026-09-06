@@ -111,35 +111,57 @@ function tsl_reels_video_id( $url ) {
  * Work out which RSS feed to read from whatever the editor put in the
  * "Playlist or channel" box.
  *
- * A playlist is the shape we want people to use: the team decides what goes in
- * it, so the strip shows exactly the clips they chose. A channel works too, but
- * its feed carries every upload — see tsl_reels_is_short() for how the long
- * ones get dropped.
+ * Two shapes work. A hand-made playlist gives the team exact control over what
+ * appears. A channel is the low-effort option: point at it once and new Shorts
+ * arrive on their own.
+ *
+ * For a channel we do NOT read the channel feed, which carries every upload
+ * including long videos. YouTube maintains a hidden per-channel playlist of
+ * that channel's Shorts, whose ID is the channel ID with "UC" swapped for
+ * "UUSH" — Shorts-only by construction, in a single request, with no need to
+ * probe each video. The channel feed stays as the fallback for a channel that
+ * has no such playlist, and there tsl_reels_is_short() does the filtering.
  *
  * @param string $source  Pasted URL or bare ID.
  * @param bool   $resolve Allow the remote lookup a bare @handle needs. Only
  *                        true on the fetch path — a page render must never
  *                        block on an HTTP request.
- * @return array{url:string,kind:string,id:string} Empty url when unusable.
+ * @return array{url:string,kind:string,id:string,fallback:string} Empty url when unusable.
  */
 function tsl_reels_feed( $source, $resolve = false ) {
-	$none   = array( 'url' => '', 'kind' => '', 'id' => '' );
+	$none   = array( 'url' => '', 'kind' => '', 'id' => '', 'fallback' => '' );
 	$source = trim( $source );
 	if ( '' === $source ) {
 		return $none;
 	}
 
-	$feed = static function ( $kind, $id ) {
+	$url = static function ( $kind, $id ) {
+		return 'https://www.youtube.com/feeds/videos.xml?' . $kind . '_id=' . rawurlencode( $id );
+	};
+
+	$feed = static function ( $kind, $id ) use ( $url ) {
 		return array(
-			'url'  => 'https://www.youtube.com/feeds/videos.xml?' . $kind . '_id=' . rawurlencode( $id ),
-			'kind' => $kind,
-			'id'   => $id,
+			'url'      => $url( $kind, $id ),
+			'kind'     => $kind,
+			'id'       => $id,
+			'fallback' => '',
+		);
+	};
+
+	// A channel: read its Shorts playlist, and keep the raw channel feed in
+	// reserve in case that playlist does not exist.
+	$channel = static function ( $id ) use ( $url ) {
+		return array(
+			'url'      => $url( 'playlist', 'UUSH' . substr( $id, 2 ) ),
+			'kind'     => 'channel',
+			'id'       => $id,
+			'fallback' => $url( 'channel', $id ),
 		);
 	};
 
 	// Bare IDs. Playlist IDs start PL/UU/FL/OL/LL; channel IDs start UC.
 	if ( preg_match( '#^UC[A-Za-z0-9_-]{16,}$#', $source ) ) {
-		return $feed( 'channel', $source );
+		return $channel( $source );
 	}
 	if ( preg_match( '#^(?:PL|UU|FL|OL|LL)[A-Za-z0-9_-]{8,}$#', $source ) ) {
 		return $feed( 'playlist', $source );
@@ -150,15 +172,16 @@ function tsl_reels_feed( $source, $resolve = false ) {
 		return $feed( 'playlist', $m[1] );
 	}
 	if ( preg_match( '#youtube\.com/channel/(UC[A-Za-z0-9_-]+)#i', $source, $m ) ) {
-		return $feed( 'channel', $m[1] );
+		return $channel( $m[1] );
 	}
 
 	// A handle or legacy custom URL — the channel ID isn't in the URL, so the
-	// page has to be read once to find it.
+	// page has to be read once to find it. Any trailing path (/shorts, /videos)
+	// is ignored, so pasting the Shorts tab straight from the address bar works.
 	if ( preg_match( '#youtube\.com/(@[A-Za-z0-9_.\-]+|c/[^/?\#]+|user/[^/?\#]+)#i', $source, $m )
 		|| preg_match( '#^(@[A-Za-z0-9_.\-]+)$#', $source, $m ) ) {
 		$id = tsl_reels_resolve_channel( $m[1], $resolve );
-		return $id ? $feed( 'channel', $id ) : $none;
+		return $id ? $channel( $id ) : $none;
 	}
 
 	return $none;
@@ -345,7 +368,16 @@ function tsl_reels_refresh() {
 		if ( ! $feed['url'] ) {
 			return false;
 		}
-		$items = tsl_reels_fetch_feed( $feed['url'], 'channel' === $feed['kind'] );
+
+		// The primary feed is Shorts-only either way — a playlist the team
+		// curates, or a channel's UUSH playlist — so nothing needs probing.
+		$items = tsl_reels_fetch_feed( $feed['url'], false );
+
+		// Only a channel has a fallback, and only reaching for it costs the
+		// per-video Shorts check.
+		if ( empty( $items ) && $feed['fallback'] ) {
+			$items = tsl_reels_fetch_feed( $feed['fallback'], true );
+		}
 	}
 
 	$cache = get_option( TSL_REELS_CACHE, array() );
@@ -467,9 +499,10 @@ function tsl_reels_settings_intro( $section ) {
 	$when   = ( is_array( $cache ) && ! empty( $cache['fetched'] ) ) ? (int) $cache['fetched'] : 0;
 
 	echo '<p class="description" style="max-width:46em;">';
-	esc_html_e( 'ช่อง "Playlist หรือ Channel" วางได้ทั้งลิงก์ playlist, ลิงก์ช่อง หรือ @handle', 'thestandard-life' );
-	echo '<br><strong>' . esc_html__( 'แนะนำให้ใช้ playlist', 'thestandard-life' ) . '</strong> ';
-	esc_html_e( '— ทีมคุมเองได้ว่าคลิปไหนขึ้นหน้าแรก ถ้าใส่เป็นช่อง ระบบจะดึงคลิปล่าสุดมาแล้วคัดเฉพาะที่เป็น Shorts ให้', 'thestandard-life' );
+	echo '<strong>' . esc_html__( 'ง่ายที่สุด:', 'thestandard-life' ) . '</strong> ';
+	esc_html_e( 'วางลิงก์แท็บ Shorts ของช่องไปเลย เช่น youtube.com/@THE.STANDARDLIFE/shorts — อัป Shorts ใหม่เมื่อไหร่ หน้าแรกขึ้นเองภายใน 30 นาที', 'thestandard-life' );
+	echo '<br>';
+	esc_html_e( 'หรือใส่ลิงก์ playlist ถ้าอยากคุมเองว่าคลิปไหนขึ้นหน้าแรก (ระบบจะแสดงเรียงตามลำดับใน playlist)', 'thestandard-life' );
 	echo '<br>';
 	esc_html_e( 'ช่อง "คลิปที่ 1–6" ใช้เฉพาะตอนเลือก "ใส่ลิงก์เอง" เท่านั้น', 'thestandard-life' );
 	echo '</p>';

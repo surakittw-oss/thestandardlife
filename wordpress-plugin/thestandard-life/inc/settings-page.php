@@ -86,7 +86,7 @@ function tsl_home_sections() {
 						'off'     => __( 'ปิดส่วนนี้', 'thestandard-life' ),
 					),
 				),
-				'tsl_reels_playlist' => array( __( 'Playlist หรือ Channel', 'thestandard-life' ), 'text', '' ),
+				'tsl_reels_playlist' => array( __( 'ลิงก์ช่อง Shorts หรือ Playlist', 'thestandard-life' ), 'text', '' ),
 				'tsl_reels_count'    => array(
 					__( 'แสดงกี่คลิป', 'thestandard-life' ),
 					'select',
