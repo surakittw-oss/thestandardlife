@@ -789,6 +789,22 @@
   html[data-theme="dark"] .reels-arrow{background:var(--stone); border-color:#3a3a3a; box-shadow:none;}
   /* display:grid above outranks the UA sheet's [hidden]{display:none}. */
   .reels-arrow[hidden], .tsl-lightbox-btn[hidden]{display:none;}
+
+  /* Scroll position, and a handle to drag. The line is hairline-thin to suit
+     the page, so the hit area is stretched well past it with a pseudo-element —
+     a 2px drag target is a 2px drag target no matter how good it looks. */
+  .reels-bar{position:relative; margin:22px 48px 0; height:2px;
+    background:var(--line); border-radius:2px; cursor:pointer;
+    /* pan-y, not none: the hit area is a ~24px band across the page, and "none"
+       would make that band refuse to scroll the page vertically. Sideways
+       gestures still come to us. */
+    touch-action:pan-y;}
+  .reels-bar::before{content:""; position:absolute; inset:-11px 0;}
+  .reels-bar-thumb{position:absolute; top:0; left:0; height:100%; width:0;
+    background:var(--ink); border-radius:2px;}
+  .reels-rail.dragging .reels-bar{cursor:grabbing;}
+  /* Snapping mid-drag fights the thumb, which should track the pointer exactly. */
+  .reels-rail.dragging .reels{scroll-snap-type:none; scroll-behavior:auto;}
   .reels-arrow svg{width:19px; height:19px;}
   .reels-prev{left:26px;}
   .reels-next{right:26px;}
@@ -808,12 +824,15 @@
   @media (max-width: 900px){
     .reels-rail{--reel-w:180px;}
     .reels{padding-left:24px; padding-right:24px; scroll-padding-left:24px;}
+    .reels-bar{margin-left:24px; margin-right:24px;}
   }
   @media (max-width: 600px){
     .reels-rail{--reel-w:150px;}
     .reels{gap:14px; padding-left:16px; padding-right:16px; scroll-padding-left:16px;}
     .reel-title{font-size:13px; margin-top:10px;}
     /* Swiping is the obvious gesture on a touch screen; the arrows would only
-       cover the first and last card. */
+       cover the first and last card. The bar stays — with the arrows gone it is
+       the only thing saying there is more of the row off to the right. */
     .reels-arrow{display:none;}
+    .reels-bar{margin-left:16px; margin-right:16px; margin-top:18px;}
   }

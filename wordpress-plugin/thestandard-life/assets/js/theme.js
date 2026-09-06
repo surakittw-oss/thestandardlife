@@ -520,10 +520,14 @@
         card.addEventListener('click', function () { play(i); });
       });
 
-      // ---- rail arrows -----------------------------------------------------
+      // ---- arrows and scroll bar -------------------------------------------
       var back = rail.querySelector('.reels-prev');
       var fwd = rail.querySelector('.reels-next');
+      var bar = rail.querySelector('.reels-bar');
+      var thumb = bar && bar.querySelector('.reels-bar-thumb');
       if (!back || !fwd) return;
+
+      function slack() { return strip.scrollWidth - strip.clientWidth; }
 
       function step() {
         var card = cards[0].getBoundingClientRect();
@@ -531,18 +535,72 @@
       }
 
       function sync() {
-        // A rail that fits on screen needs no arrows at all; past either end,
-        // the arrow that cannot move is hidden rather than left dead.
-        var slack = strip.scrollWidth - strip.clientWidth;
-        if (slack < 8) { back.hidden = true; fwd.hidden = true; return; }
+        // A rail that fits on screen needs neither arrows nor a bar; past
+        // either end, the arrow that cannot move is hidden rather than left
+        // dead.
+        var room = slack();
+        if (room < 8) {
+          back.hidden = true;
+          fwd.hidden = true;
+          if (bar) bar.hidden = true;
+          return;
+        }
         back.hidden = strip.scrollLeft < 8;
-        fwd.hidden = strip.scrollLeft > slack - 8;
+        fwd.hidden = strip.scrollLeft > room - 8;
+
+        if (!bar || !thumb) return;
+        bar.hidden = false;
+        // The thumb is as wide a share of the track as the visible row is of
+        // the whole row — the usual scrollbar relationship — with a floor so it
+        // stays catchable when there are a lot of clips.
+        var track = bar.clientWidth;
+        var w = Math.max(32, Math.round(track * strip.clientWidth / strip.scrollWidth));
+        thumb.style.width = w + 'px';
+        thumb.style.transform = 'translateX(' + ((track - w) * (strip.scrollLeft / room)) + 'px)';
       }
 
       back.addEventListener('click', function () { strip.scrollBy({ left: -step(), behavior: 'smooth' }); });
       fwd.addEventListener('click', function () { strip.scrollBy({ left: step(), behavior: 'smooth' }); });
       strip.addEventListener('scroll', sync, { passive: true });
       window.addEventListener('resize', sync);
+
+      // Dragging the bar, and clicking anywhere along it to jump there. Pointer
+      // events cover mouse, pen and touch in one path. The move/up listeners go
+      // on the document rather than the bar, so a drag that wanders off a 2px
+      // line — which every drag does — keeps working.
+      if (bar && thumb && window.PointerEvent) {
+        bar.addEventListener('pointerdown', function (e) {
+          var room = slack();
+          if (room < 8) return;
+          e.preventDefault();
+
+          var track = bar.getBoundingClientRect();
+          var w = thumb.offsetWidth;
+          var travel = track.width - w;
+
+          function follow(clientX) {
+            if (travel <= 0) return;
+            // Grab the thumb by its middle, so it sits under the pointer.
+            var at = (clientX - track.left - w / 2) / travel;
+            strip.scrollLeft = Math.min(1, Math.max(0, at)) * room;
+          }
+
+          function move(ev) { follow(ev.clientX); }
+          function release() {
+            document.removeEventListener('pointermove', move);
+            document.removeEventListener('pointerup', release);
+            document.removeEventListener('pointercancel', release);
+            rail.classList.remove('dragging');
+          }
+
+          rail.classList.add('dragging');
+          document.addEventListener('pointermove', move);
+          document.addEventListener('pointerup', release);
+          document.addEventListener('pointercancel', release);
+          follow(e.clientX);
+        });
+      }
+
       sync();
     })();
   });

@@ -60,5 +60,12 @@ $tsl_reels_more = tsl_reels_more_link();
 		<button type="button" class="reels-arrow reels-next" aria-label="<?php esc_attr_e( 'เลื่อนขวา', 'thestandard-life' ); ?>" hidden>
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
 		</button>
+
+		<?php
+		// Where you are in the row, and a handle to drag. aria-hidden because it
+		// duplicates scrolling the browser already offers by keyboard and wheel —
+		// announcing it would add a control that leads nowhere new.
+		?>
+		<div class="reels-bar" aria-hidden="true" hidden><span class="reels-bar-thumb"></span></div>
 	</div>
 </section>
