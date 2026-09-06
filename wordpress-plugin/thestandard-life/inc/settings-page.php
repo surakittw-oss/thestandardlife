@@ -73,6 +73,37 @@ function tsl_home_sections() {
 				'tsl_event_link'  => array( __( 'Link URL', 'thestandard-life' ), 'url', '' ),
 			),
 		),
+		'reels'    => array(
+			'title'  => __( 'Reels (คลิปสั้น YouTube Shorts)', 'thestandard-life' ),
+			'fields' => array(
+				'tsl_reels_source'   => array(
+					__( 'ดึงคลิปจาก', 'thestandard-life' ),
+					'select',
+					'youtube',
+					array(
+						'youtube' => __( 'YouTube — ดึงอัตโนมัติทุก 30 นาที', 'thestandard-life' ),
+						'manual'  => __( 'ใส่ลิงก์เอง (6 คลิปด้านล่าง)', 'thestandard-life' ),
+						'off'     => __( 'ปิดส่วนนี้', 'thestandard-life' ),
+					),
+				),
+				'tsl_reels_playlist' => array( __( 'Playlist หรือ Channel', 'thestandard-life' ), 'text', '' ),
+				'tsl_reels_count'    => array(
+					__( 'แสดงกี่คลิป', 'thestandard-life' ),
+					'select',
+					'6',
+					array( '4' => '4', '6' => '6', '8' => '8', '10' => '10' ),
+				),
+				'tsl_reels_kicker'   => array( __( 'Label', 'thestandard-life' ), 'text', 'Reels · คลิปสั้น' ),
+				'tsl_reels_title'    => array( __( 'Title', 'thestandard-life' ), 'text', 'ดูสั้นๆ ก่อนอ่านยาว' ),
+				'tsl_reels_more'     => array( __( 'ลิงก์ "ดูทั้งหมด" (ไม่ใส่ก็ได้)', 'thestandard-life' ), 'url', '' ),
+				'tsl_reels_manual_1' => array( __( 'คลิปที่ 1', 'thestandard-life' ), 'url', '' ),
+				'tsl_reels_manual_2' => array( __( 'คลิปที่ 2', 'thestandard-life' ), 'url', '' ),
+				'tsl_reels_manual_3' => array( __( 'คลิปที่ 3', 'thestandard-life' ), 'url', '' ),
+				'tsl_reels_manual_4' => array( __( 'คลิปที่ 4', 'thestandard-life' ), 'url', '' ),
+				'tsl_reels_manual_5' => array( __( 'คลิปที่ 5', 'thestandard-life' ), 'url', '' ),
+				'tsl_reels_manual_6' => array( __( 'คลิปที่ 6', 'thestandard-life' ), 'url', '' ),
+			),
+		),
 		'quote'    => array(
 			'title'  => __( 'Pull Quote', 'thestandard-life' ),
 			'fields' => array(
@@ -322,8 +353,18 @@ function tsl_render_settings_page() {
 		<form method="post" action="options.php">
 			<?php settings_fields( 'tsl_home_settings_group' ); ?>
 
-			<?php foreach ( tsl_home_sections() as $section ) : ?>
+			<?php foreach ( tsl_home_sections() as $section_key => $section ) : ?>
 				<h2 class="title"><?php echo esc_html( $section['title'] ); ?></h2>
+				<?php
+				/**
+				 * Room for a section to explain itself, or to show what it is
+				 * currently doing — a block that fetches from somewhere else
+				 * needs to say whether the last fetch worked.
+				 *
+				 * @param string $section_key Section being rendered.
+				 */
+				do_action( 'tsl_home_settings_section_intro', $section_key );
+				?>
 				<table class="form-table" role="presentation">
 					<tbody>
 						<?php foreach ( $section['fields'] as $key => $field ) : ?>

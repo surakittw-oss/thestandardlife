@@ -3,9 +3,18 @@
   'use strict';
 
   // Theme toggle with localStorage + system preference (run early to avoid flash)
+  //
+  // Every localStorage call is wrapped, because reading it is not merely
+  // unreliable — with site data blocked (Chrome's "block all cookies", some
+  // privacy extensions, an embedded webview) the property access itself throws
+  // a SecurityError. This runs first inside the file's single outer IIFE, so an
+  // uncaught throw here takes the whole of theme.js down with it: no menu, no
+  // table of contents, no album, no reels. Losing the remembered theme is a
+  // fair price; losing the page is not.
   (function () {
     var root = document.documentElement;
-    var saved = localStorage.getItem('tsl-theme');
+    var saved = null;
+    try { saved = localStorage.getItem('tsl-theme'); } catch (e) { /* no stored preference available */ }
     var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     root.setAttribute('data-theme', saved || (systemDark ? 'dark' : 'light'));
 
@@ -15,7 +24,7 @@
       btn.addEventListener('click', function () {
         var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         root.setAttribute('data-theme', next);
-        localStorage.setItem('tsl-theme', next);
+        try { localStorage.setItem('tsl-theme', next); } catch (e) { /* toggle still works, it just won't be remembered */ }
       });
     });
   })();
@@ -384,6 +393,157 @@
           x0 = null;
         }, { passive: true });
       });
+    })();
+
+    // Reels strip (YouTube Shorts)
+    (function () {
+      var rail = document.querySelector('.reels-rail');
+      if (!rail) return;
+
+      var strip = rail.querySelector('.reels');
+      var cards = Array.prototype.slice.call(rail.querySelectorAll('.reel'));
+      if (!strip || !cards.length) return;
+
+      // YouTube generates maxresdefault for most videos but not all. A missing
+      // one does not reliably 404: i.ytimg.com sometimes answers 200 with a
+      // 120x90 grey placeholder instead, which no error event ever reports. So
+      // both outcomes are checked, and hqdefault — which always exists — is
+      // swapped in. The data-fallback attribute is cleared on use, so a failing
+      // fallback cannot loop.
+      cards.forEach(function (card) {
+        var img = card.querySelector('img');
+        if (!img) return;
+
+        function useFallback() {
+          var alt = img.getAttribute('data-fallback');
+          if (!alt || img.src === alt) return;
+          img.removeAttribute('data-fallback');
+          img.src = alt;
+        }
+
+        img.addEventListener('error', useFallback);
+        img.addEventListener('load', function () {
+          if (img.naturalWidth > 0 && img.naturalWidth <= 120) useFallback();
+        });
+        // A cached image can finish before these listeners are attached.
+        if (img.complete) {
+          if (!img.naturalWidth) { useFallback(); }
+          else if (img.naturalWidth <= 120) { useFallback(); }
+        }
+      });
+
+      // ---- player ----------------------------------------------------------
+      // Built on click and thrown away on close, so nothing from YouTube is
+      // loaded until a reader actually asks for a clip. Shares the album
+      // lightbox's classes to keep one visual language for "full screen".
+      var ICONS = {
+        prev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>',
+        next: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>',
+        close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>'
+      };
+
+      function play(startAt) {
+        var at = startAt;
+        var opener = cards[startAt];
+
+        var box = document.createElement('div');
+        box.className = 'tsl-lightbox';
+        box.setAttribute('role', 'dialog');
+        box.setAttribute('aria-modal', 'true');
+
+        var stage = document.createElement('div');
+        stage.className = 'tsl-lightbox-reel';
+        var frame = document.createElement('iframe');
+        frame.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+        frame.setAttribute('allowfullscreen', '');
+        frame.setAttribute('title', 'YouTube');
+        stage.appendChild(frame);
+        box.appendChild(stage);
+
+        var count = document.createElement('span');
+        count.className = 'tsl-lightbox-count';
+        box.appendChild(count);
+
+        function button(cls, label, icon) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'tsl-lightbox-btn ' + cls;
+          b.setAttribute('aria-label', label);
+          b.innerHTML = icon;
+          box.appendChild(b);
+          return b;
+        }
+        var prev = button('tsl-lightbox-prev', 'คลิปก่อนหน้า', ICONS.prev);
+        var next = button('tsl-lightbox-next', 'คลิปถัดไป', ICONS.next);
+        var close = button('tsl-lightbox-close', 'ปิด', ICONS.close);
+        if (cards.length < 2) { prev.hidden = true; next.hidden = true; }
+
+        function render(i) {
+          at = (i + cards.length) % cards.length;
+          // nocookie keeps YouTube from setting tracking cookies on a reader
+          // who only watched, and never signed in.
+          frame.src = 'https://www.youtube-nocookie.com/embed/' +
+            encodeURIComponent(cards[at].getAttribute('data-video')) +
+            '?autoplay=1&rel=0&playsinline=1&modestbranding=1';
+          count.textContent = (at + 1) + ' / ' + cards.length;
+        }
+
+        function shut() {
+          frame.src = 'about:blank'; // stop playback before the node goes away
+          box.remove();
+          document.removeEventListener('keydown', onKey);
+          document.documentElement.classList.remove('tsl-lightbox-open');
+          document.body.classList.remove('tsl-lightbox-open');
+          if (opener) opener.focus();
+        }
+
+        function onKey(e) {
+          if (e.key === 'Escape') { shut(); }
+          if (e.key === 'ArrowLeft') { e.preventDefault(); render(at - 1); }
+          if (e.key === 'ArrowRight') { e.preventDefault(); render(at + 1); }
+        }
+
+        prev.addEventListener('click', function () { render(at - 1); });
+        next.addEventListener('click', function () { render(at + 1); });
+        close.addEventListener('click', shut);
+        box.addEventListener('click', function (e) { if (e.target === box) shut(); });
+        document.addEventListener('keydown', onKey);
+
+        render(at);
+        document.documentElement.classList.add('tsl-lightbox-open');
+        document.body.classList.add('tsl-lightbox-open');
+        document.body.appendChild(box);
+        close.focus();
+      }
+
+      cards.forEach(function (card, i) {
+        card.addEventListener('click', function () { play(i); });
+      });
+
+      // ---- rail arrows -----------------------------------------------------
+      var back = rail.querySelector('.reels-prev');
+      var fwd = rail.querySelector('.reels-next');
+      if (!back || !fwd) return;
+
+      function step() {
+        var card = cards[0].getBoundingClientRect();
+        return Math.max(160, Math.round(card.width) + 20) * 2;
+      }
+
+      function sync() {
+        // A rail that fits on screen needs no arrows at all; past either end,
+        // the arrow that cannot move is hidden rather than left dead.
+        var slack = strip.scrollWidth - strip.clientWidth;
+        if (slack < 8) { back.hidden = true; fwd.hidden = true; return; }
+        back.hidden = strip.scrollLeft < 8;
+        fwd.hidden = strip.scrollLeft > slack - 8;
+      }
+
+      back.addEventListener('click', function () { strip.scrollBy({ left: -step(), behavior: 'smooth' }); });
+      fwd.addEventListener('click', function () { strip.scrollBy({ left: step(), behavior: 'smooth' }); });
+      strip.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', sync);
+      sync();
     })();
   });
 })();

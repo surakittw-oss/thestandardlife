@@ -244,6 +244,9 @@ if ( $pick_q->have_posts() ) :
 	</section>
 <?php endif; ?>
 
+<!-- REELS -->
+<?php tsl_part( 'reels' ); ?>
+
 <!-- POPULAR THIS WEEK -->
 <?php
 $pop_q = new WP_Query( array(

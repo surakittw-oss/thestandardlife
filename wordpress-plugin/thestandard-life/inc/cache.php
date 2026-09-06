@@ -68,6 +68,17 @@ function tsl_purge_on_option_change( $option ) {
 	if ( 0 !== strpos( $option, 'tsl_' ) ) {
 		return;
 	}
+
+	// The plugin's own scratch options are not editorial content. The Reels
+	// cache in particular is rewritten every half hour whether or not the clip
+	// list actually moved, and purging the landing page on each of those would
+	// mean the homepage is never cached for more than 30 minutes at a time.
+	// tsl_reels_refresh() purges directly when the list really does change.
+	$internal = array( 'tsl_reels_cache', 'tsl_reels_resolved' );
+	if ( in_array( $option, $internal, true ) ) {
+		return;
+	}
+
 	tsl_purge_landing_cache();
 }
 add_action( 'updated_option', 'tsl_purge_on_option_change' );

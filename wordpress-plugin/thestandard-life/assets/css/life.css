@@ -658,6 +658,9 @@
     .tsl-lightbox-prev{left:8px;}
     .tsl-lightbox-next{right:8px;}
     .tsl-lightbox img{max-height:72vh;}
+    /* .tsl-lightbox drops to 14px side padding here, so the width ceiling
+       above (sized for 76px) would leave the player needlessly small. */
+    .tsl-lightbox-reel{height:min(84vh, calc((100vw - 36px) * 16 / 9), 746px);}
   }
 
   /* Round-up posts: the Time/When/Where/More Info lines that follow each
@@ -743,4 +746,74 @@
     .prose blockquote{font-size:21px;}
     .author-box{flex-direction:column; gap:16px;}
     .infocard{padding:24px;}
+  }
+
+  /* ---------- REELS (YouTube Shorts strip) ----------
+     Portrait cards in a sideways-scrolling rail. The card is a <button>, not a
+     link: clicking builds the player in place rather than sending the reader
+     off to YouTube. */
+  .reels-rail{position:relative; --reel-w:208px;}
+  .reels{display:flex; gap:20px; list-style:none; padding:4px 48px 10px; margin:0;
+    overflow-x:auto; overscroll-behavior-x:contain; scroll-snap-type:x proximity;
+    scroll-padding-left:48px; scrollbar-width:none; -ms-overflow-style:none;}
+  .reels::-webkit-scrollbar{display:none;}
+  .reels > li{flex:0 0 auto;}
+
+  .reel{display:block; width:var(--reel-w); text-align:left; scroll-snap-align:start;}
+  .reel-frame{position:relative; display:block; aspect-ratio:9/16; overflow:hidden;
+    border-radius:var(--r); background:var(--cream);}
+  .reel-frame img{width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
+  .reel:hover .reel-frame img{transform:scale(1.045);}
+  .reel-play{position:absolute; inset:auto auto 12px 12px; width:36px; height:36px;
+    display:grid; place-items:center; border-radius:50%; background:rgba(0,0,0,.55);
+    color:#fff; backdrop-filter:blur(4px); transition:background .2s ease;}
+  .reel-play svg{width:16px; height:16px; margin-left:2px;}
+  .reel:hover .reel-play{background:rgba(0,0,0,.8);}
+  .reel-title{display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical;
+    overflow:hidden; margin-top:12px; font-family:var(--sans); font-weight:600;
+    font-size:14px; line-height:1.5; letter-spacing:-.01em; color:var(--ink);}
+  .reel:focus-visible{outline:2px solid var(--ink); outline-offset:4px; border-radius:var(--r);}
+
+  /* Centred on the thumbnail rather than the whole card, so the arrows do not
+     drift downward as the two-line titles change height. */
+  .reels-arrow{position:absolute; top:calc(var(--reel-w) * 16 / 9 / 2 + 4px);
+    transform:translateY(-50%); width:44px; height:44px; z-index:2;
+    display:grid; place-items:center; border-radius:50%;
+    background:var(--paper); border:1px solid var(--line); color:var(--ink);
+    box-shadow:0 2px 12px rgba(0,0,0,.12); transition:background .2s ease;}
+  .reels-arrow:hover{background:var(--cream);}
+  /* The arrows sit mostly over the page gutter, not over a card, so the chip
+     has to read against the page itself. In light mode the drop shadow does
+     that; on a black page a shadow is invisible and a --paper chip disappears
+     into the background, leaving a chevron floating with no button around it. */
+  html[data-theme="dark"] .reels-arrow{background:var(--stone); border-color:#3a3a3a; box-shadow:none;}
+  /* display:grid above outranks the UA sheet's [hidden]{display:none}. */
+  .reels-arrow[hidden], .tsl-lightbox-btn[hidden]{display:none;}
+  .reels-arrow svg{width:19px; height:19px;}
+  .reels-prev{left:26px;}
+  .reels-next{right:26px;}
+
+  /* The player, reusing the album lightbox's chrome. */
+  /* Height drives the box so the 9:16 frame survives every window shape: a
+     fixed width plus max-height would let a short window squash the ratio and
+     letterbox the clip inside its own player. Each term is a ceiling — the
+     window's height, the window's width, and the largest size worth showing. */
+  .tsl-lightbox-reel{aspect-ratio:9/16; width:auto;
+    height:min(84vh, calc((100vw - 160px) * 16 / 9), 746px);
+    background:#000; border-radius:12px; overflow:hidden;}
+  .tsl-lightbox-reel iframe{display:block; width:100%; height:100%; border:0;}
+
+  /* Phone/tablet sizing sits directly after the rules above for the same reason
+     the album's does: equal specificity, so file order decides the winner. */
+  @media (max-width: 900px){
+    .reels-rail{--reel-w:180px;}
+    .reels{padding-left:24px; padding-right:24px; scroll-padding-left:24px;}
+  }
+  @media (max-width: 600px){
+    .reels-rail{--reel-w:150px;}
+    .reels{gap:14px; padding-left:16px; padding-right:16px; scroll-padding-left:16px;}
+    .reel-title{font-size:13px; margin-top:10px;}
+    /* Swiping is the obvious gesture on a touch screen; the arrows would only
+       cover the first and last card. */
+    .reels-arrow{display:none;}
   }
