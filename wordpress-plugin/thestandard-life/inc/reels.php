@@ -29,6 +29,14 @@ const TSL_REELS_RESOLVED = 'tsl_reels_resolved';
 /** Cron hook name. */
 const TSL_REELS_EVENT = 'tsl_reels_refresh';
 
+/**
+ * Bumped whenever a stored value could be wrong because of a bug rather than
+ * because it went stale. Version 2 discards what version 1's handle lookup
+ * resolved: it could land on a sibling channel, so both the mapping and the
+ * clips fetched with it have to go.
+ */
+const TSL_REELS_SCHEMA = 2;
+
 /** How often the clip list is refetched, in seconds. */
 const TSL_REELS_INTERVAL = 1800;
 
@@ -62,6 +70,23 @@ function tsl_reels_schedule() {
 	}
 }
 add_action( 'init', 'tsl_reels_schedule' );
+
+/**
+ * Throw away stored values that an older version may have got wrong.
+ *
+ * Nothing is re-fetched here — clearing the timestamps is enough, because the
+ * staleness check on shutdown then treats the list as overdue and refills it on
+ * the very next page load.
+ */
+function tsl_reels_maybe_upgrade() {
+	if ( (int) get_option( 'tsl_reels_schema', 0 ) === TSL_REELS_SCHEMA ) {
+		return;
+	}
+	delete_option( TSL_REELS_RESOLVED );
+	delete_option( TSL_REELS_CACHE );
+	update_option( 'tsl_reels_schema', TSL_REELS_SCHEMA, true );
+}
+add_action( 'init', 'tsl_reels_maybe_upgrade', 5 );
 
 /**
  * Drop the scheduled event when the plugin is switched off.
@@ -194,6 +219,13 @@ function tsl_reels_feed( $source, $resolve = false ) {
  * channel — refetching a whole HTML page every 30 minutes to learn the same
  * answer would be wasteful.
  *
+ * Only the page's OWN identity is read, from the four places YouTube states it:
+ * the canonical link, og:url, the itemprop identifier, and the channel metadata
+ * block. A channel's front page also lists the other channels it features, so a
+ * loose search for the first "channelId" on the page finds a sibling channel
+ * roughly as often as the right one — THE STANDARD LIFE's front page carries
+ * eight channel IDs, and the first belongs to THE STANDARD SPORT.
+ *
  * @param string $handle Handle or path fragment.
  * @param bool   $fetch  Whether the page may be fetched when it is not known yet.
  * @return string Channel ID, or '' if it could not be read.
@@ -216,9 +248,22 @@ function tsl_reels_resolve_channel( $handle, $fetch = false ) {
 		return '';
 	}
 
-	$body = wp_remote_retrieve_body( $res );
-	if ( ! preg_match( '#"(?:channelId|externalId)":"(UC[A-Za-z0-9_-]+)"#', $body, $m )
-		&& ! preg_match( '#channel/(UC[A-Za-z0-9_-]+)#', $body, $m ) ) {
+	$body     = wp_remote_retrieve_body( $res );
+	$patterns = array(
+		'#<link[^>]+rel="canonical"[^>]+href="https://www\.youtube\.com/channel/(UC[A-Za-z0-9_-]+)"#i',
+		'#<meta[^>]+property="og:url"[^>]+content="https://www\.youtube\.com/channel/(UC[A-Za-z0-9_-]+)"#i',
+		'#<meta[^>]+itemprop="identifier"[^>]+content="(UC[A-Za-z0-9_-]+)"#i',
+		'#"channelMetadataRenderer":\{.*?"externalId":"(UC[A-Za-z0-9_-]+)"#s',
+	);
+
+	$m = null;
+	foreach ( $patterns as $pattern ) {
+		if ( preg_match( $pattern, $body, $found ) ) {
+			$m = $found;
+			break;
+		}
+	}
+	if ( ! $m ) {
 		return '';
 	}
 
@@ -260,18 +305,25 @@ function tsl_reels_is_short( $video_id ) {
 /**
  * Read the clip list from YouTube's RSS feed.
  *
+ * The feed also names the channel it belongs to, which is carried back so the
+ * settings page can show whose clips these are. Pointing at the wrong channel is
+ * an easy mistake to make and an easy one to miss — the strip just quietly fills
+ * with somebody else's videos.
+ *
  * @param string $feed_url Feed URL.
  * @param bool   $filter   Drop non-Shorts (only worth doing for a channel feed).
- * @return array[] Items as array( id, title, published ).
+ * @return array{items:array[],name:string} Items as array( id, title, published ).
  */
 function tsl_reels_fetch_feed( $feed_url, $filter ) {
+	$empty = array( 'items' => array(), 'name' => '' );
+
 	if ( ! function_exists( 'simplexml_load_string' ) ) {
-		return array();
+		return $empty;
 	}
 
 	$res = wp_remote_get( $feed_url, array( 'timeout' => 10 ) );
 	if ( is_wp_error( $res ) || 200 !== wp_remote_retrieve_response_code( $res ) ) {
-		return array();
+		return $empty;
 	}
 
 	// LIBXML_NONET blocks any network fetch the document asks for. Entity
@@ -283,7 +335,14 @@ function tsl_reels_fetch_feed( $feed_url, $filter ) {
 	libxml_use_internal_errors( $previous );
 
 	if ( ! $xml || ! isset( $xml->entry ) ) {
-		return array();
+		return $empty;
+	}
+
+	// A playlist feed names the channel under <author>; a channel feed repeats
+	// it as the feed <title>.
+	$name = isset( $xml->author->name ) ? (string) $xml->author->name : '';
+	if ( '' === $name && isset( $xml->title ) ) {
+		$name = (string) $xml->title;
 	}
 
 	$items = array();
@@ -305,7 +364,7 @@ function tsl_reels_fetch_feed( $feed_url, $filter ) {
 			break;
 		}
 	}
-	return $items;
+	return array( 'items' => $items, 'name' => $name );
 }
 
 /**
@@ -361,6 +420,8 @@ function tsl_reels_refresh() {
 		return false;
 	}
 
+	$name = '';
+
 	if ( 'manual' === $source ) {
 		$items = tsl_reels_fetch_manual();
 	} else {
@@ -371,13 +432,16 @@ function tsl_reels_refresh() {
 
 		// The primary feed is Shorts-only either way — a playlist the team
 		// curates, or a channel's UUSH playlist — so nothing needs probing.
-		$items = tsl_reels_fetch_feed( $feed['url'], false );
+		$result = tsl_reels_fetch_feed( $feed['url'], false );
 
 		// Only a channel has a fallback, and only reaching for it costs the
 		// per-video Shorts check.
-		if ( empty( $items ) && $feed['fallback'] ) {
-			$items = tsl_reels_fetch_feed( $feed['fallback'], true );
+		if ( empty( $result['items'] ) && $feed['fallback'] ) {
+			$result = tsl_reels_fetch_feed( $feed['fallback'], true );
 		}
+
+		$items = $result['items'];
+		$name  = $result['name'];
 	}
 
 	$cache = get_option( TSL_REELS_CACHE, array() );
@@ -398,6 +462,7 @@ function tsl_reels_refresh() {
 	// the alternative.
 	update_option( TSL_REELS_CACHE, array(
 		'items'   => $items,
+		'name'    => $name,
 		'fetched' => time(),
 		'checked' => time(),
 	), true );
@@ -512,12 +577,18 @@ function tsl_reels_settings_intro( $section ) {
 	}
 
 	if ( $items ) {
+		$name = ( is_array( $cache ) && ! empty( $cache['name'] ) ) ? $cache['name'] : '';
 		$note = sprintf(
 			/* translators: 1: number of clips, 2: human-readable time difference */
 			esc_html__( 'ตอนนี้มี %1$d คลิปพร้อมแสดง · อัปเดตล่าสุดเมื่อ %2$s ที่แล้ว', 'thestandard-life' ),
 			count( $items ),
 			$when ? esc_html( human_time_diff( $when ) ) : '—'
 		);
+		// Naming the channel turns "is this the right one?" into something an
+		// editor can see at a glance instead of having to open the homepage.
+		if ( $name ) {
+			$note .= '<br><strong>' . esc_html__( 'กำลังดึงจาก:', 'thestandard-life' ) . ' ' . esc_html( $name ) . '</strong>';
+		}
 		printf( '<div class="notice notice-success inline" style="margin:0 0 8px;"><p>%s</p></div>', $note ); // phpcs:ignore WordPress.Security.EscapeOutput
 		return;
 	}
