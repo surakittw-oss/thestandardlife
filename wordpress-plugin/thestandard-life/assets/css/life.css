@@ -82,9 +82,6 @@
   .logo{display:flex; flex-direction:column; align-items:center; gap:0; line-height:1; color:var(--ink);}
   .logo-img{height:clamp(72px, 9vw, 110px); width:auto; display:block;}
   html[data-theme="dark"] .logo-img{filter:invert(1);}
-  .logo-sub{text-align:center; margin-top:10px; max-width:50ch;}
-  .logo-sub .th{font-family:var(--sans); font-weight:400; font-size:13px; line-height:1.6; color:var(--muted); display:block;}
-  .logo-sub .en{font-family:var(--mono); font-size:9.5px; letter-spacing:.3em; text-transform:uppercase; color:var(--muted); display:block; margin-top:5px;}
 
   /* nav */
   .nav{display:flex; justify-content:center; align-items:stretch; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:0 48px; overflow-x:auto; scrollbar-width:none; position:sticky; top:0; z-index:100; background:var(--paper); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); transition:box-shadow .25s;}
@@ -358,8 +355,6 @@
     .mh-right{position:absolute; top:18px; right:16px; gap:10px;}
     .logo{align-items:center;}
     .logo-img{height:clamp(52px,12vw,72px);}
-    .logo-sub .th{font-size:12px;}
-    .logo-sub{text-align:center; padding:0 16px;}
 
     /* sticky nav → hamburger drawer */
     .nav{padding:0; flex-direction:column; align-items:stretch; overflow:visible; border-bottom:1px solid var(--line);}
@@ -459,7 +454,6 @@
     .foot-top ul{align-items:center;}
     .foot-bottom{align-items:center; text-align:center;}
     .foot-bottom .l{justify-content:center;}
-    .logo-sub .th{font-size:11.5px;}
     .popular{padding:0 14px;}
     .pick{padding:0 14px;}
     .cat-row{padding:0 14px;}

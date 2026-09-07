@@ -40,13 +40,13 @@ $tsl_terms = get_terms( array(
 		</div>
 
 		<div>
+			<?php
+			// Logo alone. The strapline still runs in the footer, where there is
+			// room for it; at the top it only pushed the masthead down.
+			?>
 			<a class="logo" href="<?php echo esc_url( $tsl_home ); ?>" aria-label="THE STANDARD LIFE">
 				<img src="<?php echo esc_url( TSL_URL . 'assets/img/logo-tsl.png' ); ?>" alt="THE STANDARD LIFE" class="logo-img">
 			</a>
-			<div class="logo-sub">
-				<span class="th"><?php esc_html_e( 'คู่มือกิน ดื่ม เที่ยว และ Well-being ของคนเมืองที่อยากมีสุขภาพกายและใจที่ดีอย่างยั่งยืน', 'thestandard-life' ); ?></span>
-				<span class="en"><?php esc_html_e( 'The Urban Guide to Well-being', 'thestandard-life' ); ?></span>
-			</div>
 		</div>
 
 		<div class="mh-right">
