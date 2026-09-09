@@ -535,9 +535,9 @@
 
   /* article prose */
   .prose{max-width:720px; font-family:var(--sans); font-size:18px; line-height:1.85; color:var(--body);}
-  .prose > * + *{margin-top:14px;}
+  .prose > * + *{margin-top:26px;}
   .prose h2{font-family:var(--sans); font-weight:700; font-size:28px; line-height:1.3; letter-spacing:-.02em; color:var(--ink); margin-top:56px; scroll-margin-top:96px; background-color:var(--cream); border-left:12px solid var(--line-strong); padding:10px 15px;}
-  .prose h2 + p{margin-top:20px;}
+  .prose h2 + p{margin-top:28px;}
   .prose p{color:var(--body); font-family:'Sarabun', var(--sans);}
   .prose p .drop{float:left; font-family:var(--sans); font-weight:700; font-size:64px; line-height:.82; padding:6px 12px 0 0; color:var(--ink);}
   .prose strong{font-weight:600; color:var(--ink);}
