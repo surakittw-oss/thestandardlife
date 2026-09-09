@@ -105,4 +105,20 @@ function tsl_render_gallery( $output, $attr, $instance = 0 ) {
 	<?php
 	return ob_get_clean();
 }
-add_filter( 'post_gallery', 'tsl_render_gallery', 10, 3 );
+/**
+ * Runs late on purpose.
+ *
+ * post_gallery hands every filter the previous one's output and takes whatever
+ * comes back last, and this one substitutes its own markup wholesale rather
+ * than building on what it was given. So on a LIFE page it has to be the last
+ * word — at the default priority of 10 it is not: the active theme registers
+ * its own gallery slider on post_gallery at 10 too, and a theme's functions
+ * load after every plugin, so the theme's callback is registered second and
+ * therefore runs second, quietly replacing the album with its own markup.
+ *
+ * The visible result was worse than just "the wrong slider": LIFE pages drop
+ * the theme's stylesheets (see tsl_dequeue_theme_styles), so the theme's
+ * gallery arrived with none of its CSS — every slide stacked down the page,
+ * arrows and counter sitting in the text flow, thumbnails at full column width.
+ */
+add_filter( 'post_gallery', 'tsl_render_gallery', 999, 3 );
