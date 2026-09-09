@@ -137,6 +137,33 @@ function tsl_render_cards( $items, $slug, $with_hr = false ) {
 }
 
 /**
+ * Drop paragraphs that carry no visible content.
+ *
+ * Classic Editor leaves one of these behind more often than an author notices:
+ * pasting from Google Docs regularly lands a stray "<p>&nbsp;</p>" between
+ * paragraphs, and pressing Enter twice in the Visual tab does the same on
+ * purpose but with the same invisible result. Either way, wpautop has already
+ * turned it into a real paragraph with the column's usual line-height plus
+ * margin above and below it — so what looks like "one Enter, one line's worth
+ * of gap" on screen is actually two paragraph margins either side of a blank
+ * line: three times the space between two ordinary paragraphs, not one.
+ *
+ * Only a paragraph with nothing but whitespace, &nbsp;, or <br> tags in it
+ * qualifies — anything with real text, an image, or a shortcode's own markup is
+ * left alone.
+ *
+ * @param string $content Post content, after wpautop has run.
+ * @return string
+ */
+function tsl_strip_empty_paragraphs( $content ) {
+	if ( ! tsl_current_view() ) {
+		return $content;
+	}
+	return (string) preg_replace( '#<p[^>]*>(?:\s|&nbsp;|<br\s*/?>)*</p>#i', '', $content );
+}
+add_filter( 'the_content', 'tsl_strip_empty_paragraphs', 20 );
+
+/**
  * Turn bare URLs inside an event block's meta lines into links.
  *
  * Round-up posts carry a "Booking:" and "More Info:" line per event, and
