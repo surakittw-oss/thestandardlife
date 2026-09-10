@@ -758,10 +758,10 @@
     border-radius:var(--r); background:var(--cream);}
   .reel-frame img{width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
   .reel:hover .reel-frame img{transform:scale(1.045);}
-  .reel-play{position:absolute; inset:auto auto 12px 12px; width:36px; height:36px;
+  .reel-play{position:absolute; inset:0; margin:auto; width:44px; height:44px;
     display:grid; place-items:center; border-radius:50%; background:rgba(0,0,0,.55);
     color:#fff; backdrop-filter:blur(4px); transition:background .2s ease;}
-  .reel-play svg{width:16px; height:16px; margin-left:2px;}
+  .reel-play svg{width:18px; height:18px; margin-left:2px;}
   .reel:hover .reel-play{background:rgba(0,0,0,.8);}
   .reel-title{display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical;
     overflow:hidden; margin-top:12px; font-family:var(--sans); font-weight:600;
