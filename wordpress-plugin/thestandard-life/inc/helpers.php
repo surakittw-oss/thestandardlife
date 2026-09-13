@@ -266,6 +266,63 @@ function tsl_category_links( $post_id = null, $sep = ' &middot; ' ) {
 }
 
 /**
+ * The section links LIFE actually shows — same source the top nav bar uses,
+ * so the footer's "Sections" list can never drift from what a reader just saw
+ * in the menu.
+ *
+ * Once an editor arranges the LIFE menu in Appearance > Menus, that menu is
+ * curated by hand and may list a category before it has any articles in it —
+ * a category page that says "nothing here yet" is a fine thing to link to.
+ * Querying terms independently (the previous footer code) uses hide_empty and
+ * silently drops exactly those categories, so the footer would show fewer
+ * sections than the nav bar sitting above it on the same page. Reading the
+ * real menu instead means both always agree.
+ *
+ * Falls back to the same hide_empty term query the header's own fallback nav
+ * uses, for a site with no menu arranged yet — so the two still match in that
+ * state too.
+ *
+ * @return array{name:string,url:string}[]
+ */
+function tsl_section_links() {
+	$home  = get_post_type_archive_link( TSL_CPT );
+	$links = array();
+
+	$locations = get_nav_menu_locations();
+	if ( ! empty( $locations['tsl_life_nav'] ) ) {
+		$items = wp_get_nav_menu_items( $locations['tsl_life_nav'] );
+		if ( $items ) {
+			foreach ( $items as $item ) {
+				// The menu's own "Home" entry belongs with the footer's existing
+				// Home link, not repeated under "Sections".
+				if ( untrailingslashit( $item->url ) === untrailingslashit( $home ) ) {
+					continue;
+				}
+				$links[] = array( 'name' => $item->title, 'url' => $item->url );
+			}
+			return $links;
+		}
+	}
+
+	$terms = get_terms( array(
+		'taxonomy'   => TSL_TAX,
+		'hide_empty' => true,
+		'number'     => 6,
+		'orderby'    => 'count',
+		'order'      => 'DESC',
+	) );
+	if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+		foreach ( $terms as $t ) {
+			$link = get_term_link( $t );
+			if ( ! is_wp_error( $link ) ) {
+				$links[] = array( 'name' => $t->name, 'url' => $link );
+			}
+		}
+	}
+	return $links;
+}
+
+/**
  * The primary category as a link.
  *
  * @param int|null $post_id Post ID.

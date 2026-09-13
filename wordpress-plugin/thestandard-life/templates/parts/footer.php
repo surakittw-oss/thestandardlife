@@ -9,11 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$tsl_terms = get_terms( array(
-	'taxonomy'   => TSL_TAX,
-	'hide_empty' => true,
-	'number'     => 8,
-) );
+$tsl_section_links = tsl_section_links();
 ?>
 
 <footer>
@@ -31,17 +27,13 @@ $tsl_terms = get_terms( array(
 			</div>
 		</div>
 
-		<?php if ( ! empty( $tsl_terms ) && ! is_wp_error( $tsl_terms ) ) : ?>
+		<?php if ( $tsl_section_links ) : ?>
 			<div>
 				<h5><?php esc_html_e( 'Sections', 'thestandard-life' ); ?></h5>
 				<ul>
 					<?php
-					foreach ( $tsl_terms as $t ) {
-						$link = get_term_link( $t );
-						if ( is_wp_error( $link ) ) {
-							continue;
-						}
-						echo '<li><a href="' . esc_url( $link ) . '">' . esc_html( $t->name ) . '</a></li>';
+					foreach ( $tsl_section_links as $link ) {
+						echo '<li><a href="' . esc_url( $link['url'] ) . '">' . esc_html( $link['name'] ) . '</a></li>';
 					}
 					?>
 				</ul>
