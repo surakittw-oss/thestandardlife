@@ -173,9 +173,9 @@
 
   /* ---------- BIG QUOTE — the single bold black moment ---------- */
   .quote{padding:140px 40px; text-align:center; background:var(--ink); color:var(--paper); border-bottom:1px solid var(--ink);}
-  .quote blockquote{font-family:var(--sans); font-style:normal; font-weight:300; font-size:clamp(26px,3.8vw,44px); line-height:1.4; letter-spacing:-.01em; max-width:28ch; margin:0 auto; color:var(--paper);}
+  .quote blockquote{font-family:var(--sans); font-style:normal; font-weight:300; font-size:clamp(26px,3.8vw,36px); line-height:1.4; letter-spacing:-.01em; max-width:28ch; margin:0 auto; color:var(--paper);}
   .quote blockquote::before, .quote blockquote::after{content:'"'; color:var(--paper);}
-  .quote cite{display:block; margin-top:32px; font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; font-style:normal; color:var(--paper); opacity:.55;}
+  .quote cite{display:block; margin-top:32px; font-family:var(--mono); font-size:13px; letter-spacing:.22em; text-transform:uppercase; font-style:normal; color:var(--paper); opacity:.55;}
 
   /* ---------- CATEGORY ROW ---------- */
   .cat-row{padding:0 48px; margin-bottom:72px;}
