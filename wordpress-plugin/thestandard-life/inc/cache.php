@@ -124,7 +124,6 @@ function tsl_purge_on_option_change( $option ) {
 		'tsl_reels_cache',
 		'tsl_watch_cache',
 		'tsl_yt_resolved',
-		'tsl_yt_durations',
 		'tsl_yt_schema',
 	);
 	if ( in_array( $option, $internal, true ) ) {

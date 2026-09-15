@@ -22,13 +22,12 @@ $tsl_watch_lead = array_shift( $tsl_watch );
 $tsl_watch_more = tsl_yt_more_link( 'watch' );
 
 /**
- * One thumbnail, with its running time over the corner.
+ * One thumbnail.
  *
  * @param array $video Item from tsl_yt_items().
  */
 function tsl_watch_thumb( $video ) {
-	$base   = 'https://i.ytimg.com/vi/' . rawurlencode( $video['id'] ) . '/';
-	$length = tsl_yt_length( isset( $video['duration'] ) ? $video['duration'] : 0 );
+	$base = 'https://i.ytimg.com/vi/' . rawurlencode( $video['id'] ) . '/';
 	?>
 	<span class="watch-frame">
 		<img src="<?php echo esc_url( $base . 'maxresdefault.jpg' ); ?>"
@@ -37,9 +36,6 @@ function tsl_watch_thumb( $video ) {
 		<span class="watch-play" aria-hidden="true">
 			<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 6.5v11a1 1 0 0 0 1.53.85l8.5-5.5a1 1 0 0 0 0-1.7l-8.5-5.5A1 1 0 0 0 9 6.5"/></svg>
 		</span>
-		<?php if ( $length ) : ?>
-			<span class="watch-len"><?php echo esc_html( $length ); ?></span>
-		<?php endif; ?>
 	</span>
 	<?php
 }

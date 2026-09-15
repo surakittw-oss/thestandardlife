@@ -848,11 +848,6 @@
     color:#fff; backdrop-filter:blur(4px); transition:background .2s ease;}
   .watch-play svg{width:24px; height:24px; margin-left:3px;}
   .watch-lead:hover .watch-play, .watch-item:hover .watch-play{background:rgba(0,0,0,.82);}
-  /* Always dark-on-light regardless of theme: it sits on a photograph, not on
-     the page, so it has to hold up against whatever that frame happens to be. */
-  .watch-len{position:absolute; right:8px; bottom:8px; padding:3px 7px; border-radius:4px;
-    background:rgba(0,0,0,.82); color:#fff; font-family:var(--mono); font-size:11px;
-    letter-spacing:.04em; line-height:1.5;}
 
   .watch-body{display:block; margin-top:18px;}
   .watch-title{display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical;
@@ -872,7 +867,6 @@
   .watch-item .watch-meta{margin-top:8px; font-size:10px;}
   .watch-item .watch-play{width:34px; height:34px;}
   .watch-item .watch-play svg{width:15px; height:15px; margin-left:2px;}
-  .watch-item .watch-len{right:5px; bottom:5px; padding:2px 5px; font-size:10px;}
 
   /* The player, in landscape. Height drives the box for the same reason the
      portrait one does — see .tsl-lightbox-reel. */

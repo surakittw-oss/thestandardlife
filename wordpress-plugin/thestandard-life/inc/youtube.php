@@ -25,9 +25,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 /** Option holding @handle → channel-ID lookups, so we resolve each one once. */
 const TSL_YT_RESOLVED = 'tsl_yt_resolved';
 
-/** Option holding video ID → length in seconds; a video's length never changes. */
-const TSL_YT_DURATIONS = 'tsl_yt_durations';
-
 /** Cron hook name. */
 const TSL_YT_EVENT = 'tsl_yt_refresh';
 
@@ -38,8 +35,9 @@ const TSL_YT_EVENT = 'tsl_yt_refresh';
  * v2 discarded what v1's handle lookup resolved: it could land on a sibling
  * channel, so both the mapping and the clips fetched with it had to go.
  * v3 moves the handle map to a name shared by both blocks.
+ * v4 drops the running-time map, now that nothing displays a running time.
  */
-const TSL_YT_SCHEMA = 3;
+const TSL_YT_SCHEMA = 4;
 
 /** How often the clip lists are refetched, in seconds. */
 const TSL_YT_INTERVAL = 1800;
@@ -64,7 +62,6 @@ function tsl_yt_blocks() {
 			'manual'    => 6,
 			'fallback'  => 6,
 			'tab'       => '/shorts',
-			'durations' => false,
 		),
 		'watch' => array(
 			'cache'     => 'tsl_watch_cache',
@@ -74,9 +71,6 @@ function tsl_yt_blocks() {
 			'manual'    => 4,
 			'fallback'  => 4,
 			'tab'       => '/videos',
-			// Choosing to give something fifty minutes is a different decision
-			// from watching a Short, and the length is most of it.
-			'durations' => true,
 		),
 	);
 }
@@ -161,6 +155,7 @@ function tsl_yt_maybe_upgrade() {
 
 	delete_option( 'tsl_reels_resolved' ); // Superseded by TSL_YT_RESOLVED.
 	delete_option( 'tsl_reels_schema' );
+	delete_option( 'tsl_yt_durations' ); // Retired in v4.
 	delete_option( TSL_YT_RESOLVED );
 	foreach ( tsl_yt_blocks() as $config ) {
 		delete_option( $config['cache'] );
@@ -375,44 +370,6 @@ function tsl_yt_is_short( $video_id ) {
 }
 
 /**
- * How long a video runs, in seconds.
- *
- * The feeds do not carry it and the keyless alternatives do not either, so the
- * watch page is read for the length YouTube states there. That page is around a
- * megabyte, which is why every answer is kept: a video's length never changes,
- * so each one is fetched exactly once no matter how often the block refreshes.
- *
- * @param string $video_id Video ID.
- * @return int Seconds, or 0 when unknown.
- */
-function tsl_yt_duration( $video_id ) {
-	$known = get_option( TSL_YT_DURATIONS, array() );
-	$known = is_array( $known ) ? $known : array();
-	if ( isset( $known[ $video_id ] ) ) {
-		return (int) $known[ $video_id ];
-	}
-
-	$res = wp_remote_get( 'https://www.youtube.com/watch?v=' . rawurlencode( $video_id ), array(
-		'timeout'    => 10,
-		'user-agent' => 'Mozilla/5.0 (compatible; THE STANDARD LIFE/' . TSL_VERSION . ')',
-	) );
-	if ( is_wp_error( $res ) || 200 !== wp_remote_retrieve_response_code( $res ) ) {
-		return 0;
-	}
-	if ( ! preg_match( '#"lengthSeconds":"(\d+)"#', wp_remote_retrieve_body( $res ), $m ) ) {
-		return 0;
-	}
-
-	// Keep the map from growing without bound on a long-running site.
-	if ( count( $known ) > 300 ) {
-		$known = array_slice( $known, -150, null, true );
-	}
-	$known[ $video_id ] = (int) $m[1];
-	update_option( TSL_YT_DURATIONS, $known, false );
-	return (int) $m[1];
-}
-
-/**
  * Read a clip list from YouTube's RSS feed.
  *
  * The feed also names the channel it belongs to, which is carried back so the
@@ -586,12 +543,6 @@ function tsl_yt_refresh_block( $block ) {
 		$name  = $result['name'];
 	}
 
-	if ( $config['durations'] ) {
-		foreach ( $items as $i => $item ) {
-			$items[ $i ]['duration'] = tsl_yt_duration( $item['id'] );
-		}
-	}
-
 	$cache = get_option( $config['cache'], array() );
 	$cache = is_array( $cache ) ? $cache : array();
 
@@ -739,26 +690,6 @@ function tsl_yt_more_link( $block ) {
 		return 'https://www.youtube.com/channel/' . $feed['id'] . $config['tab'];
 	}
 	return '';
-}
-
-/**
- * Seconds as a clock reading — 8:04, or 1:12:30 once it passes an hour.
- *
- * @param int $seconds Duration.
- * @return string Empty when unknown.
- */
-function tsl_yt_length( $seconds ) {
-	$seconds = (int) $seconds;
-	if ( $seconds < 1 ) {
-		return '';
-	}
-	$h = (int) floor( $seconds / 3600 );
-	$m = (int) floor( ( $seconds % 3600 ) / 60 );
-	$s = $seconds % 60;
-
-	return $h
-		? sprintf( '%d:%02d:%02d', $h, $m, $s )
-		: sprintf( '%d:%02d', $m, $s );
 }
 
 /**
