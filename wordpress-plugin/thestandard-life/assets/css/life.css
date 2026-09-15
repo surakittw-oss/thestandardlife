@@ -172,7 +172,11 @@
   .pop-item .cat{font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); display:block; margin-top:6px;}
 
   /* ---------- BIG QUOTE — the single bold black moment ---------- */
-  .quote{padding:140px 40px; text-align:center; background:var(--ink); color:var(--paper); border-bottom:1px solid var(--ink);}
+  /* The quote is meant to be a pause in the page's rhythm, but at 140px top and
+     bottom it was carrying more empty space than text and eating 60% of a
+     laptop screen. Scales with the viewport now, down to the same 56px the
+     phone breakpoint already used. */
+  .quote{padding:clamp(56px,6.5vw,90px) 40px; text-align:center; background:var(--ink); color:var(--paper); border-bottom:1px solid var(--ink);}
   .quote blockquote{font-family:var(--sans); font-style:normal; font-weight:300; font-size:clamp(26px,3.8vw,36px); line-height:1.4; letter-spacing:-.01em; max-width:28ch; margin:0 auto; color:var(--paper);}
   .quote blockquote::before, .quote blockquote::after{content:'"'; color:var(--paper);}
   .quote cite{display:block; margin-top:32px; font-family:var(--mono); font-size:13px; letter-spacing:.22em; text-transform:uppercase; font-style:normal; color:var(--paper); opacity:.55;}
