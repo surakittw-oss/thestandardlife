@@ -488,6 +488,49 @@
   .art-kicker a:hover,
   .rel-card .cat a:hover,
   .hero-main .cat a:hover{text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px;}
+
+  /* ---------- CLICKABLE HEADLINES ----------
+     Every headline that leads somewhere says so on hover, the same way: a
+     hairline underline, and the photograph beside it easing back a touch.
+     Card headlines carried no hover state at all, so on a page built out of
+     black text on white there was nothing to separate a link from a caption
+     until the cursor happened to be over one.
+
+     Some of these sit inside a wrapping <a> (the whole tile is the link) and
+     some are an <a> inside the heading; both shapes are covered so the
+     behaviour is identical wherever a reader points. */
+  .hero-main h1 a:hover,
+  .pop-item h4 a:hover,
+  .rel-card h4 a:hover,
+  a.pick-card:hover h3,
+  a.card:hover h4,
+  a.li:hover h4,
+  a.small-card:hover h5{text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px;}
+
+  .hero-main figure img,
+  .pick-card img,
+  .rel-card img,
+  .li img,
+  .cat-stack .card img,
+  .small-card img,
+  .cat-lead img{transition:opacity .2s ease;}
+
+  a.pick-card:hover img,
+  a.card:hover img,
+  a.li:hover img,
+  a.small-card:hover img,
+  .rel-card a:hover img{opacity:.92;}
+
+  /* Keyboard users get the same signal the cursor does — none of these tiles
+     showed a focus ring before, so tabbing through the page was invisible. */
+  a.pick-card:focus-visible,
+  a.card:focus-visible,
+  a.li:focus-visible,
+  a.small-card:focus-visible,
+  a.cat-lead:focus-visible,
+  .hero-main h1 a:focus-visible,
+  .pop-item h4 a:focus-visible,
+  .rel-card a:focus-visible{outline:2px solid var(--ink); outline-offset:4px; border-radius:2px;}
   .art-title{font-family:var(--sans); font-weight:700; font-size:clamp(32px,4.6vw,54px); line-height:1.18; letter-spacing:-.025em; text-wrap:balance;}
   .art-dek{font-family:var(--sans); font-weight:400; font-size:clamp(17px,2vw,21px); line-height:1.6; color:var(--body); margin-top:24px; max-width:60ch; margin-left:auto; margin-right:auto;}
   .art-meta{display:flex; align-items:center; justify-content:center; gap:16px; margin-top:32px; flex-wrap:wrap; font-family:var(--sans); font-size:13.5px; color:var(--muted);}
