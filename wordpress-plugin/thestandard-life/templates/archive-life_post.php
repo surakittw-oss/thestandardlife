@@ -162,9 +162,9 @@ $shown_ids = array_merge( array( $cover_id ), wp_list_pluck( $hero_left, 'ID' ) 
 						<?php endif; ?>
 					</figure>
 				<?php endif; ?>
-				<h5 style="font-family:var(--sans); font-size:16px; margin-top:12px; font-weight:600; line-height:1.5;">
+				<h5 class="event-title">
 					<?php if ( $ev_link ) : ?>
-						<a href="<?php echo esc_url( $ev_link ); ?>" style="color:inherit;" target="_blank" rel="noopener"><?php echo esc_html( $event_title ); ?></a>
+						<a href="<?php echo esc_url( $ev_link ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $event_title ); ?></a>
 					<?php else : ?>
 						<?php echo esc_html( $event_title ); ?>
 					<?php endif; ?>

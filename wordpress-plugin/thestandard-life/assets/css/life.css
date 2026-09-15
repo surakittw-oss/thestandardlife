@@ -125,7 +125,8 @@
      cropped, but kept to a thumbnail size so it stays a supporting visual. The
      px cap keeps it small once the sidebar goes full-width on mobile. */
   .event-poster{margin:14px 0 0;}
-  .event-poster img{display:block; width:100%; max-width:min(70%, 190px); height:auto; border-radius:var(--r); background:var(--cream);}
+  .event-poster img{display:block; width:100%; max-width:min(70%, 190px); height:auto; border-radius:var(--r); background:var(--cream); transition:opacity .2s ease;}
+  .event-title{font-family:var(--sans); font-size:16px; margin-top:12px; font-weight:600; line-height:1.5;}
 
   .hero-main{display:flex; flex-direction:column; gap:26px;}
   .hero-main .cat{font-family:var(--mono); font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--muted);}
@@ -505,7 +506,8 @@
   a.pick-card:hover h3,
   a.card:hover h4,
   a.li:hover h4,
-  a.small-card:hover h5{text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px;}
+  a.small-card:hover h5,
+  .event-title a:hover{text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px;}
 
   .hero-main figure img,
   .pick-card img,
@@ -519,7 +521,8 @@
   a.card:hover img,
   a.li:hover img,
   a.small-card:hover img,
-  .rel-card a:hover img{opacity:.92;}
+  .rel-card a:hover img,
+  .event-poster a:hover img{opacity:.92;}
 
   /* Keyboard users get the same signal the cursor does — none of these tiles
      showed a focus ring before, so tabbing through the page was invisible. */
@@ -530,7 +533,9 @@
   a.cat-lead:focus-visible,
   .hero-main h1 a:focus-visible,
   .pop-item h4 a:focus-visible,
-  .rel-card a:focus-visible{outline:2px solid var(--ink); outline-offset:4px; border-radius:2px;}
+  .rel-card a:focus-visible,
+  .event-title a:focus-visible,
+  .event-poster a:focus-visible{outline:2px solid var(--ink); outline-offset:4px; border-radius:2px;}
   .art-title{font-family:var(--sans); font-weight:700; font-size:clamp(32px,4.6vw,54px); line-height:1.18; letter-spacing:-.025em; text-wrap:balance;}
   .art-dek{font-family:var(--sans); font-weight:400; font-size:clamp(17px,2vw,21px); line-height:1.6; color:var(--body); margin-top:24px; max-width:60ch; margin-left:auto; margin-right:auto;}
   .art-meta{display:flex; align-items:center; justify-content:center; gap:16px; margin-top:32px; flex-wrap:wrap; font-family:var(--sans); font-size:13.5px; color:var(--muted);}
