@@ -802,7 +802,7 @@
      Portrait cards in a sideways-scrolling rail. The card is a <button>, not a
      link: clicking builds the player in place rather than sending the reader
      off to YouTube. */
-  .reels-rail{position:relative; --reel-w:208px;}
+  .reels-rail{position:relative; --reel-w:184px;}
   .reels{display:flex; gap:20px; list-style:none; padding:4px 48px 10px; margin:0;
     overflow-x:auto; overscroll-behavior-x:contain; scroll-snap-type:x proximity;
     scroll-padding-left:48px; scrollbar-width:none; -ms-overflow-style:none;}
@@ -872,12 +872,12 @@
   /* Phone/tablet sizing sits directly after the rules above for the same reason
      the album's does: equal specificity, so file order decides the winner. */
   @media (max-width: 900px){
-    .reels-rail{--reel-w:180px;}
+    .reels-rail{--reel-w:160px;}
     .reels{padding-left:24px; padding-right:24px; scroll-padding-left:24px;}
     .reels-bar{margin-left:24px; margin-right:24px;}
   }
   @media (max-width: 600px){
-    .reels-rail{--reel-w:150px;}
+    .reels-rail{--reel-w:136px;}
     .reels{gap:14px; padding-left:16px; padding-right:16px; scroll-padding-left:16px;}
     .reel-title{font-size:13px; margin-top:10px;}
     /* Swiping is the obvious gesture on a touch screen; the arrows would only
